@@ -5,8 +5,9 @@ class Task {
   String _title;
   bool _complete = false;
   bool _delayed = false;
+  IconData _icon;
 
-  Task(this._id, this._title);
+  Task(this._id, this._title, this._icon);
 
   bool get delayed => _delayed;
 
@@ -27,4 +28,10 @@ class Task {
   }
 
   UniqueKey get id => _id;
+
+  set icon(IconData icon) {
+    _icon = icon;
+  }
+
+  IconData get icon => _icon;
 }
