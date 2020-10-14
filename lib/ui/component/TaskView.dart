@@ -1,5 +1,6 @@
 import 'package:daily_quest/model/Task.dart';
-import 'package:daily_quest/utils/constants.dart';
+import 'package:daily_quest/ui/component/DateTimeStampView.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TaskView extends StatefulWidget {
@@ -19,25 +20,47 @@ class _TaskViewState extends State<TaskView> {
     return Container(
       child: Dismissible(
           key: widget.task.id,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          child: FlatButton(
+            onPressed: () => {},
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Icon(
-                  widget.task.icon,
-                  color: darkPrimary,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  child: Icon(
+                    widget.task.icon,
+                    color: darkPrimary,
+                  ),
                 ),
-                Text(widget.task.title),
-                Checkbox(
-                  value: widget.task.complete,
-                  onChanged: (isChecked) {
-                    setState(() {
-                      widget.task.complete = isChecked;
-                    });
-                  },
-                  activeColor: darkPrimary,
-                  checkColor: Theme.of(context).primaryColorLight,
+                Expanded(child:
+                  Column(
+                    children: <Widget>[
+                      DateTimeStampView(DateTime.now()),
+                      Text(
+                        widget.task.title,
+                        maxLines: 3,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Checkbox(
+                    value: widget.task.complete,
+                    onChanged: (isChecked) {
+                      setState(() {
+                        widget.task.complete = isChecked;
+                      });
+                    },
+                    activeColor: darkPrimary,
+                    checkColor: Theme.of(context).primaryColorLight,
+                  ),
                 ),
               ],
             ),

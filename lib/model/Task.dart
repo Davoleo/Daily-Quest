@@ -6,6 +6,7 @@ class Task {
   bool _complete = false;
   bool _delayed = false;
   IconData _icon;
+  //TODO Add duration of the delay and an enum to define what type the task is
 
   Task(this._id, this._title, this._icon);
 

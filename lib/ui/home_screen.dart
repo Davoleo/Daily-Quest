@@ -32,7 +32,14 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         color: Constants.primaryLight30,
-        child: ListView.builder(
+        child: ListView.separated(
+          itemCount: taskList.length,
+          separatorBuilder: (_, index) => Divider(
+            color: Theme.of(context).primaryColorDark,
+            height: 1,
+            indent: Constants.dividerHPadding,
+            endIndent: Constants.dividerHPadding,
+          ),
           itemBuilder: (_, index) {
             if (index < taskList.length)
               return TaskView(taskList[index]);
