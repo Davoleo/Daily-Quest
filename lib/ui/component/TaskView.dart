@@ -36,7 +36,7 @@ class _TaskViewState extends State<TaskView> {
                 Expanded(child:
                   Column(
                     children: <Widget>[
-                      DateTimeStampView(DateTime.now()),
+                      DateTimeStampView(widget.task.nextDateTime(), widget.task.taskType),
                       Text(
                         widget.task.title,
                         maxLines: 3,

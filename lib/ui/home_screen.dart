@@ -12,9 +12,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Task> taskList = [
-    Task(UniqueKey(), "Set the right temperature settings for the season", Icons.ac_unit),
-    Task(UniqueKey(), "Wake up after resting in the afternoon", Icons.access_alarm),
-    Task(UniqueKey(), "Take my grandma to the weekly doctor visit", Icons.accessible),
+    Task(id: UniqueKey(), title: "Set the right temperature settings for the season", icon: Icons.ac_unit, taskType: TaskFrequency.annual, delay: Duration(days: 365)),
+    Task(id: UniqueKey(), title: "Wake up after resting in the afternoon", icon: Icons.access_alarm, taskType: TaskFrequency.daily, delay: Duration(days: 1)),
+    Task(id: UniqueKey(), title: "Take my grandma to the weekly doctor visit", icon: Icons.accessible, taskType: TaskFrequency.weekly, delay: Duration(days: 7)),
   ];
 
   @override
