@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:daily_quest/utils/constants.dart';
+import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -33,7 +36,7 @@ class Task {
     //initialize the date if it's null
     dateTime = dateTime == null ? DateTime.now() : dateTime;
 
-    //Check wether the set DateTime has already passed or not,
+    //Check whether the set DateTime has already passed or not,
     //if it has update the DateTime to the next occurrence, return it and replace the old one
     if (dateTime.isAfter(DateTime.now()))
       return dateTime;
@@ -48,12 +51,39 @@ class Task {
     switch(frequency) {
       case TaskFrequency.daily:
         return Constants.dailyFormat;
+
       case TaskFrequency.weekly:
         return Constants.weeklyFormat;
+
       case TaskFrequency.monthly:
       case TaskFrequency.annual:
       default:
         return Constants.monthlyFormat;
     }
+  }
+
+  ///JSON serialization
+  Task.fromJsonMap(Map<String, dynamic> json) :
+        id = json["id"],
+        title = json["title"],
+        complete = json["complete"],
+        icon = new IconData(json["icon"]),
+        taskType = getFrequencyFromString(json["frequency"]),
+        delay = Duration(seconds: json["delay"]);
+
+  Map<String, dynamic> mapJsonString(String json) {
+    jsonDecode(json);
+  }
+
+  Map<String, dynamic> toJsonMap() => {
+    'id': id.toString(),
+    'title': title,
+    'icon': icon.codePoint,
+    'frequency': taskType.toString(),
+    'delay': delay.inSeconds
+  };
+
+  String toJsonString(Map<String, dynamic> jsonMap) {
+    return jsonEncode(toJsonMap());
   }
 }
