@@ -17,6 +17,13 @@ class _HomePageState extends State<HomePage> {
     Task(id: UniqueKey(), title: "Take my grandma to the weekly doctor visit", icon: Icons.accessible, taskType: TaskFrequency.weekly, delay: Duration(days: 7)),
   ];
 
+  removeTask(UniqueKey key) {
+    setState(() {
+      taskList.removeWhere((task) => task.id == key);
+      print("Length: ${taskList.length}");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Constants.init(context);
@@ -42,7 +49,7 @@ class _HomePageState extends State<HomePage> {
           ),
           itemBuilder: (_, index) {
             if (index < taskList.length)
-              return TaskView(taskList[index]);
+              return TaskView(taskList[index], removeTask);
             else
               return null;
           }),
