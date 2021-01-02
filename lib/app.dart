@@ -1,6 +1,8 @@
 import 'package:daily_quest/ui/home_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'utils/data_io.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {

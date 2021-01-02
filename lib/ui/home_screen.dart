@@ -1,6 +1,7 @@
 import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/TaskView.dart';
 import 'package:daily_quest/utils/constants.dart';
+import 'package:daily_quest/utils/data_io.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,9 +18,25 @@ class _HomePageState extends State<HomePage> {
     Task(id: UniqueKey(), title: "Take my grandma to the weekly doctor visit", icon: Icons.accessible, taskType: TaskFrequency.weekly, delay: Duration(days: 7)),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    initFileConnection(() {
+      loadData().then((list) {
+        if (list != null) {
+          var tasks = list.map((map) => Task.fromJsonMap(map)).toList();
+          taskList.addAll(tasks);
+        }
+        else print("La lista è null");
+      });
+    });
+  }
+
   removeTask(UniqueKey key) {
     setState(() {
       taskList.removeWhere((task) => task.id == key);
+      var jsonList = taskList.map((task) => task.toJson()).toList();
+      saveOverwriteData(jsonList);
       print("Length: ${taskList.length}");
     });
   }

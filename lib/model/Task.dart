@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/material.dart';
@@ -71,19 +69,11 @@ class Task {
         taskType = getFrequencyFromString(json["frequency"]),
         delay = Duration(seconds: json["delay"]);
 
-  Map<String, dynamic> mapJsonString(String json) {
-    jsonDecode(json);
-  }
-
-  Map<String, dynamic> toJsonMap() => {
-    'id': id.toString(),
-    'title': title,
-    'icon': icon.codePoint,
-    'frequency': taskType.toString(),
-    'delay': delay.inSeconds
+  Map<String, dynamic> toJson() => {
+      'id': id.toString(),
+      'title': title,
+      'icon': icon.codePoint,
+      'frequency': taskType.toString(),
+      'delay': delay.inSeconds
   };
-
-  String toJsonString(Map<String, dynamic> jsonMap) {
-    return jsonEncode(toJsonMap());
-  }
 }
