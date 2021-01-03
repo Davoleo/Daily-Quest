@@ -14,8 +14,7 @@ void initFileConnection(Function callback) {
     dataDir = directory;
     jsonFile = new File(dataDir.path + "/quests.json");
     if (!jsonFile.existsSync()) {
-      //TODO TBC
-      jsonFile.writeAsStringSync("{}");
+      jsonFile.writeAsStringSync("[]");
     }
 
     encoder = JsonEncoder.withIndent('  ');
@@ -33,19 +32,20 @@ void appendData(Map<String, dynamic> entry) {
       .then((_) => isReady = true);
 }
 
-void saveOverwriteData(List<Map<String, dynamic>> entries) {
+void saveOverwriteData(List<Map<String, dynamic>> entries) async {
   if (!isReady)
     return;
 
+  String encoded = jsonEncode(entries);
   isReady = false;
-  entries.map((entry) => jsonEncode(entry)).forEach((string) {
-    jsonFile.writeAsString(string, mode: FileMode.write)
-        .then((_) => isReady = true);
-  });
+  await jsonFile.writeAsString(encoded, mode: FileMode.write);
+  isReady = true;
 }
 
 Future<List<Map<String, dynamic>>> loadData() async {
+  //FIX THIS (returns as a List<dynamic> instead of a list of maps)
   if (!isReady)
     return null;
-  return jsonDecode(await jsonFile.readAsString());
+  String jsonString = await jsonFile.readAsString();
+  return jsonDecode(jsonString);
 }

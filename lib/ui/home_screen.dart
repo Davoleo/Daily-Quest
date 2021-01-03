@@ -2,6 +2,7 @@ import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/TaskView.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/data_io.dart';
+import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,23 +13,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Task> taskList = [
-    Task(id: UniqueKey(), title: "Set the right temperature settings for the season", icon: Icons.ac_unit, taskType: TaskFrequency.annual, delay: Duration(days: 365)),
-    Task(id: UniqueKey(), title: "Wake up after resting in the afternoon", icon: Icons.access_alarm, taskType: TaskFrequency.daily, delay: Duration(days: 1)),
-    Task(id: UniqueKey(), title: "Take my grandma to the weekly doctor visit", icon: Icons.accessible, taskType: TaskFrequency.weekly, delay: Duration(days: 7)),
-  ];
+  List<Task> taskList = [];
 
   @override
   void initState() {
     super.initState();
     initFileConnection(() {
-      loadData().then((list) {
-        if (list != null) {
-          var tasks = list.map((map) => Task.fromJsonMap(map)).toList();
-          taskList.addAll(tasks);
-        }
-        else print("La lista è null");
-      });
+      loadData().then((list) => taskList = getAllTasksFromMapList(list));
     });
   }
 

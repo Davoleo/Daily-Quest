@@ -9,3 +9,11 @@ TaskFrequency getFrequencyFromString(String freqString) {
 
   return null;
 }
+
+List<Task> getAllTasksFromMapList(List<Map<String, dynamic>> jsonTasks) {
+  return jsonTasks.map((jTask) => Task.fromJsonMap(jTask)).toList();
+}
+
+List<Map<String, dynamic>> serializeAllTasks(List<Task> tasks) {
+  return tasks.map((task) => task.toJson()).toList();
+}
