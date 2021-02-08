@@ -12,8 +12,7 @@ enum TaskFrequency {
 
 class Task {
 
-  final UniqueKey id;
-  String title;
+  final String title;
   bool complete = false;
   bool delayed = false;
   IconData icon;
@@ -22,7 +21,6 @@ class Task {
   DateTime dateTime;
 
   Task({
-    @required this.id,
     @required this.title,
     this.icon = Icons.title,
     @required this.taskType,
@@ -62,18 +60,17 @@ class Task {
 
   ///JSON serialization
   Task.fromJsonMap(Map<String, dynamic> json) :
-        id = json["id"],
         title = json["title"],
         complete = json["complete"],
-        icon = new IconData(json["icon"]),
+        icon = new IconData(json["icon"], fontFamily: "MaterialIcons"),
         taskType = getFrequencyFromString(json["frequency"]),
         delay = Duration(seconds: json["delay"]);
 
   Map<String, dynamic> toJson() => {
-      'id': id.toString(),
-      'title': title,
-      'icon': icon.codePoint,
-      'frequency': taskType.toString(),
-      'delay': delay.inSeconds
+    'title': title,
+    'complete': complete,
+    'icon': icon.codePoint,
+    'frequency': taskType.toString(),
+    'delay': delay.inSeconds
   };
 }

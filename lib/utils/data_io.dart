@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:daily_quest/model/Task.dart';
+import 'package:daily_quest/utils/functions.dart';
 import 'package:path_provider/path_provider.dart';
 
 JsonEncoder encoder;
@@ -42,10 +44,19 @@ void saveOverwriteData(List<Map<String, dynamic>> entries) async {
   isReady = true;
 }
 
-Future<List<Map<String, dynamic>>> loadData() async {
-  //FIX THIS (returns as a List<dynamic> instead of a list of maps)
+Future<List<Task>> loadData() async {
+
+  //TODO Fix loadData returning null when the IO is not ready
   if (!isReady)
     return null;
+  // await Future.doWhile(() async {
+  //   print("STO CAZOOOOO");
+  //   return !isReady;
+  // });
+
+  //await waitUntilTrue(new BoolWrapper(isReady));
   String jsonString = await jsonFile.readAsString();
-  return jsonDecode(jsonString);
+  Iterable array = jsonDecode(jsonString);
+  List<Task> tasks = getAllTasksFromMapList(array);
+  return tasks;
 }

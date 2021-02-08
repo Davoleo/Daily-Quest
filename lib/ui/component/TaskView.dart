@@ -18,11 +18,14 @@ class _TaskViewState extends State<TaskView> {
   Widget build(BuildContext context) {
     Color darkPrimary = Theme.of(context).primaryColorDark;
 
+    if (widget.task.complete == null)
+      widget.task.complete = false;
+
     return Container(
       child: Dismissible(
-        key: widget.task.id,
+        key: ValueKey(widget.task.title),
         onDismissed: (_) {
-          widget.deleteFunction(widget.task.id);
+          widget.deleteFunction(widget.task.title);
         },
         direction: DismissDirection.endToStart,
         background: DecoratedBox(

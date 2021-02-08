@@ -2,7 +2,6 @@ import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/TaskView.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/data_io.dart';
-import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,13 +18,16 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     initFileConnection(() {
-      loadData().then((list) => taskList = getAllTasksFromMapList(list));
+      // taskList.add(Task(title: "Set the right temperature settings for the season", icon: Icons.ac_unit, taskType: TaskFrequency.annual, delay: Duration(days: 365)));
+      // taskList.add(Task(title: "Wake up after resting in the afternoon", icon: Icons.access_alarm, taskType: TaskFrequency.daily, delay: Duration(days: 1)));
+      // taskList.add(Task(title: "Take my grandma to the weekly doctor visit", icon: Icons.accessible, taskType: TaskFrequency.weekly, delay: Duration(days: 7)));
+      // saveOverwriteData(serializeAllTasks(taskList));
     });
   }
 
-  removeTask(UniqueKey key) {
+  removeTask(String title) {
     setState(() {
-      taskList.removeWhere((task) => task.id == key);
+      taskList.removeWhere((task) => task.title == title);
       var jsonList = taskList.map((task) => task.toJson()).toList();
       saveOverwriteData(jsonList);
       print("Length: ${taskList.length}");
@@ -47,20 +49,36 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         color: Constants.primaryLight30,
-        child: ListView.separated(
-          itemCount: taskList.length,
-          separatorBuilder: (_, index) => Divider(
-            color: Theme.of(context).primaryColorDark,
-            height: 1,
-            indent: Constants.dividerHPadding,
-            endIndent: Constants.dividerHPadding,
-          ),
-          itemBuilder: (_, index) {
-            if (index < taskList.length)
-              return TaskView(taskList[index], removeTask);
-            else
-              return null;
-          }),
+        child: FutureBuilder(
+          future: loadData(),
+          builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              this.taskList = snapshot.data;
+              if (snapshot.hasError)
+                return Center(child: Text("An error occurred while loading data\nError: " + snapshot.error.toString()));
+              if (!snapshot.hasData)
+                return Center(child: Text("No data to load!"));
+              return ListView.separated(
+                  itemCount: snapshot.data.length,
+                  separatorBuilder: (_, index) => Divider(
+                    color: Theme.of(context).primaryColorDark,
+                    height: 1,
+                    indent: Constants.dividerHPadding,
+                    endIndent: Constants.dividerHPadding,
+                  ),
+                  itemBuilder: (_, index) {
+                    if (index < snapshot.data.length)
+                      return TaskView(snapshot.data[index], removeTask);
+                    else
+                      return null;
+                  }
+              );
+            }
+            else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {},
