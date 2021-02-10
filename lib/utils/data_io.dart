@@ -46,15 +46,11 @@ void saveOverwriteData(List<Map<String, dynamic>> entries) async {
 
 Future<List<Task>> loadData() async {
 
-  //TODO Fix loadData returning null when the IO is not ready
-  if (!isReady)
-    return null;
-  // await Future.doWhile(() async {
-  //   print("STO CAZOOOOO");
-  //   return !isReady;
-  // });
+  if (!isReady) {
+    print("Delaying data loading");
+    return Future.delayed(new Duration(milliseconds: 100), loadData);
+  }
 
-  //await waitUntilTrue(new BoolWrapper(isReady));
   String jsonString = await jsonFile.readAsString();
   Iterable array = jsonDecode(jsonString);
   List<Task> tasks = getAllTasksFromMapList(array);
