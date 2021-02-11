@@ -9,6 +9,10 @@ class Constants {
   static DateFormat weeklyFormat = DateFormat("EEEEE - HH:mm");
   static DateFormat monthlyFormat = DateFormat("dd/MM/yy - HH:mm");
 
+  static OutlineInputBorder fieldOutline = OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(8))
+  );
+
   static init(BuildContext context) {
     primaryLight30 = Theme.of(context).primaryColorLight.withAlpha(76);
   }
