@@ -53,6 +53,6 @@ Future<List<Task>> loadData() async {
 
   String jsonString = await jsonFile.readAsString();
   Iterable array = jsonDecode(jsonString);
-  List<Task> tasks = getAllTasksFromMapList(array);
+  List<Task> tasks = UtilFunctions.getAllTasksFromMapList(array);
   return tasks;
 }

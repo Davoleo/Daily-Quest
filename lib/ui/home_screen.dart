@@ -1,4 +1,5 @@
 import 'package:daily_quest/model/Task.dart';
+import 'package:daily_quest/ui/add_edit_task_screen.dart';
 import 'package:daily_quest/ui/component/TaskView.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/data_io.dart';
@@ -81,7 +82,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditTaskScreen(false)));
+        },
         tooltip: 'Add Task',
         child: Icon(Icons.add),
       ),
