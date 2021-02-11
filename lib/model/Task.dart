@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 enum TaskFrequency {
-  daily,
-  weekly,
-  monthly,
-  annual,
+  Daily,
+  Weekly,
+  Monthly,
+  Annual,
 }
 
 class Task {
 
   final String title;
+  final String notes;
   bool complete = false;
   bool delayed = false;
   IconData icon;
@@ -22,6 +23,7 @@ class Task {
 
   Task({
     @required this.title,
+    this.notes = "",
     this.icon = Icons.title,
     @required this.taskType,
     @required this.delay,
@@ -45,14 +47,14 @@ class Task {
 
   static DateFormat getFormatter(TaskFrequency frequency) {
     switch(frequency) {
-      case TaskFrequency.daily:
+      case TaskFrequency.Daily:
         return Constants.dailyFormat;
 
-      case TaskFrequency.weekly:
+      case TaskFrequency.Weekly:
         return Constants.weeklyFormat;
 
-      case TaskFrequency.monthly:
-      case TaskFrequency.annual:
+      case TaskFrequency.Monthly:
+      case TaskFrequency.Annual:
       default:
         return Constants.monthlyFormat;
     }
@@ -61,13 +63,15 @@ class Task {
   ///JSON serialization
   Task.fromJsonMap(Map<String, dynamic> json) :
         title = json["title"],
+        notes = json["notes"],
         complete = json["complete"],
         icon = new IconData(json["icon"], fontFamily: "MaterialIcons"),
-        taskType = getFrequencyFromString(json["frequency"]),
+        taskType = UtilFunctions.getFrequencyFromString(json["frequency"]),
         delay = Duration(seconds: json["delay"]);
 
   Map<String, dynamic> toJson() => {
     'title': title,
+    'notes': notes,
     'complete': complete,
     'icon': icon.codePoint,
     'frequency': taskType.toString(),
