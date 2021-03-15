@@ -1,4 +1,6 @@
+
 import 'package:daily_quest/model/Task.dart';
+import 'package:daily_quest/ui/component/IconPicker.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,15 @@ class AddEditTaskScreen extends StatefulWidget {
       String catName = freq.toString().split('.').last;
       _categories.add(new DropdownMenuItem(child: Text(catName)));
     }
+  }
+
+  Future<void> _showIconPicker(context) async {
+    await showDialog(context: context, builder: (BuildContext context) {
+      return IconPicker(
+        title: const Text("Select an Icon"),
+        icons: Constants.supportedTaskIcons,
+      );
+    });
   }
 
   @override
@@ -53,8 +64,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Icon: ")
-                //TODO Icon Selector Component
+                Text("Icon: "),
+                IconButton(icon: Icon(Icons.emoji_emotions_outlined), onPressed: () => widget._showIconPicker(context)),
               ],
             ),
             DropdownButton<TaskFrequency>(

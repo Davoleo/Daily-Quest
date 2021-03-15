@@ -13,6 +13,40 @@ class Constants {
     borderRadius: BorderRadius.all(Radius.circular(8))
   );
 
+  static final List<Icon> supportedTaskIcons = [
+    Icon(Icons.emoji_emotions_outlined),
+    Icon(Icons.note),
+    Icon(Icons.edit),
+    Icon(Icons.title),
+    Icon(Icons.alarm),
+    Icon(Icons.ac_unit),
+    Icon(Icons.accessibility),
+    Icon(Icons.accessible),
+    Icon(Icons.account_balance),
+    Icon(Icons.camera_alt),
+    Icon(Icons.phone),
+    Icon(Icons.message),
+    Icon(Icons.airplanemode_active),
+    Icon(Icons.alternate_email),
+    Icon(Icons.anchor),
+    Icon(Icons.assignment_outlined),
+    Icon(Icons.attach_file),
+    Icon(Icons.watch_later_outlined),
+    Icon(Icons.work),
+    Icon(Icons.weekend),
+    Icon(Icons.sports_basketball),
+    Icon(Icons.sports_esports),
+    Icon(Icons.smartphone),
+    Icon(Icons.account_circle),
+    Icon(Icons.audiotrack),
+    Icon(Icons.flag),
+    Icon(Icons.apps),
+    Icon(Icons.alt_route),
+    Icon(Icons.all_inbox),
+    Icon(Icons.category),
+    Icon(Icons.bar_chart),
+  ];
+
   static init(BuildContext context) {
     primaryLight30 = Theme.of(context).primaryColorLight.withAlpha(76);
   }
