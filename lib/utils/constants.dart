@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class Constants {
   static Color primaryLight30;
+  static SystemUiOverlayStyle statusBar;
   static const double dividerHPadding = 16;
 
   static DateFormat dailyFormat = DateFormat("HH:mm");
@@ -49,5 +51,6 @@ class Constants {
 
   static init(BuildContext context) {
     primaryLight30 = Theme.of(context).primaryColorLight.withAlpha(76);
+    statusBar = SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light);
   }
 }
