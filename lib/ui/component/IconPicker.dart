@@ -5,6 +5,7 @@ class IconPicker extends StatelessWidget {
   const IconPicker({
     this.title = const Text("Icon Picker"),
     this.icons = const [Icon(Icons.emoji_emotions_outlined)],
+    this.itemsPerRow = 5,
     this.backgroundColor,
     this.elevation,
     this.clipBehaviour = Clip.none,
@@ -14,9 +15,11 @@ class IconPicker extends StatelessWidget {
   final Widget title;
   final List<Icon> icons;
 
+  final int itemsPerRow;
+
   //Default SimpleDialog Padding
   final EdgeInsetsGeometry titlePadding = const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0);
-  final EdgeInsetsGeometry contentPadding = const EdgeInsets.fromLTRB(0.0, 12.0, 0.0, 16.0);
+  final EdgeInsetsGeometry contentPadding = const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 16.0);
 
   final Color backgroundColor;
   final double elevation;
@@ -30,6 +33,15 @@ class IconPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextDirection textDirection = Directionality.maybeOf(context);
+
+    List<Widget> dialogOptions = [];
+    icons.forEach((icon) {
+      dialogOptions.add(new SimpleDialogOption(
+        onPressed: () => Navigator.pop(context, icon),
+        child: icon,
+        padding: const EdgeInsets.all(8.0),
+      ));
+    });
 
     Widget titleWidget;
     final EdgeInsets effectiveTitlePadding = titlePadding.resolve(textDirection);
@@ -48,16 +60,18 @@ class IconPicker extends StatelessWidget {
 
     Widget contentWidget;
     final EdgeInsets effectiveContentPadding = contentPadding.resolve(textDirection);
-    contentWidget = Flexible(
+    contentWidget = ConstrainedBox(
+      //TODO : Generify Dialog content box height
+      constraints: BoxConstraints.tightForFinite(height: 500),
       child: GridView.count(
-        crossAxisCount: icons.length,
+        crossAxisCount: itemsPerRow,
         padding: EdgeInsets.only(
           left: effectiveContentPadding.left,
           right: effectiveContentPadding.right,
           top: effectiveContentPadding.top,
           bottom: effectiveContentPadding.bottom,
         ),
-        children: icons,
+        children: dialogOptions,
       ),
     );
 

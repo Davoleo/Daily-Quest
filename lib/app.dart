@@ -1,8 +1,6 @@
 import 'package:daily_quest/ui/home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'utils/data_io.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -15,7 +13,8 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xFF6d4c41),
         primaryColorDark: Color(0xFF40241a),
         primaryColorLight: Color(0xFF9c786c),
-        accentColor: Color(0xFFce7e00)
+        accentColor: Color(0xFFce7e00),
+        dialogBackgroundColor: Color(0xffe5ccc5)
       ),
       home: HomePage(),
     );

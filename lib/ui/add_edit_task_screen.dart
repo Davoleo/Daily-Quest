@@ -18,13 +18,15 @@ class AddEditTaskScreen extends StatefulWidget {
     }
   }
 
-  Future<void> _showIconPicker(context) async {
-    await showDialog(context: context, builder: (BuildContext context) {
+  Future<Icon> _showIconPicker(context) async {
+    Icon choice = await showDialog<Icon>(context: context, builder: (BuildContext context) {
       return IconPicker(
-        title: const Text("Select an Icon"),
+        title: const Text("Select an Icon", style: TextStyle(fontSize: 24),),
         icons: Constants.supportedTaskIcons,
       );
     });
+
+    return choice;
   }
 
   @override
@@ -34,6 +36,7 @@ class AddEditTaskScreen extends StatefulWidget {
 class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
 
   TaskFrequency category;
+  Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +68,13 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text("Icon: "),
-                IconButton(icon: Icon(Icons.emoji_emotions_outlined), onPressed: () => widget._showIconPicker(context)),
+                IconButton(icon: currentIcon, onPressed: () async {
+                  Icon choice = await widget._showIconPicker(context);
+                  setState(() {
+                    if (choice != null)
+                      currentIcon = choice;
+                  });
+                }),
               ],
             ),
             DropdownButton<TaskFrequency>(
