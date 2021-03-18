@@ -49,6 +49,16 @@ class Constants {
     Icon(Icons.bar_chart),
   ];
 
+  static final List<String> weekDays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
   static init(BuildContext context) {
     primaryLight30 = Theme.of(context).primaryColorLight.withAlpha(76);
     statusBar = SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light);

@@ -8,12 +8,9 @@ class AddEditTaskScreen extends StatefulWidget {
   final bool edit;
   final Task previousTask;
 
-  TimeOfDay _timeOccurence;
-
   final List<DropdownMenuItem<TaskFrequency>> _categories = [];
 
   AddEditTaskScreen(this.edit, [this.previousTask])
-      : _timeOccurence = TimeOfDay(hour: edit ? previousTask.dateTime.hour : 0, minute: edit ? previousTask.dateTime.minute : 0)
   {
     for (TaskFrequency freq in TaskFrequency.values) {
       String catName = freq.toString().split('.').last;
@@ -41,14 +38,18 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   TaskFrequency category;
   Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
 
+  TimeOfDay _timeOccurence;
+
   @override
   Widget build(BuildContext context) {
 
+    _timeOccurence = TimeOfDay(hour: widget.edit ? widget.previousTask.dateTime.hour : 0, minute: widget.edit ? widget.previousTask.dateTime.minute : 0);
+
     TextButton timeOccurranceButton = TextButton(
-      onPressed: () => showTimePicker(context: context, initialTime: widget._timeOccurence).then((value) {
+      onPressed: () => showTimePicker(context: context, initialTime: _timeOccurence).then((value) {
         if (value != null) {
           setState(() {
-            widget._timeOccurence = value;
+            _timeOccurence = value;
           });
         }
       }),
@@ -59,13 +60,27 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           ))
       ),
       child: Text(
-        "Task Occurrence: " + widget._timeOccurence.format(context),
+        "Task Occurrence: " + _timeOccurence.format(context),
         style: TextStyle(
           color: Theme.of(context).primaryColorDark,
           fontSize: 18,
         ),
       ),
     );
+
+    List<bool> weekChoices = new List.filled(7, false);
+    final List<FittedBox> weekCheckboxes = List.generate(7, (index) => FittedBox(
+      child: Row(
+        children: [
+          Text(Constants.weekDays[index]),
+          //TODO Fix checkbox state changes
+          Checkbox(value: weekChoices[index], onChanged: (value) {setState(() {
+            weekChoices[index] = value;
+          });})
+        ],
+      ),
+    ));
+
 
     Widget frequencyConfig;
 
@@ -74,6 +89,20 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         frequencyConfig = Container(
           padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
           child: timeOccurranceButton
+        );
+        break;
+      case TaskFrequency.Weekly:
+        frequencyConfig = Padding(
+          padding: const EdgeInsets.only(top: 25),
+          child: Column(
+            children: [
+              timeOccurranceButton,
+              Wrap(
+                direction: Axis.horizontal,
+                children: weekCheckboxes,
+              )
+            ],
+          ),
         );
         break;
       default:
