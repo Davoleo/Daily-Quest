@@ -35,14 +35,13 @@ class _TaskViewState extends State<TaskView> {
             child: Icon(Icons.delete, color: Colors.white),
           ),
         ),
-        child: FlatButton(
+        child: TextButton(
           onPressed: () => {},
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 child: Icon(
                   widget.task.icon,
                   color: darkPrimary,

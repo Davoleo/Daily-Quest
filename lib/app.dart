@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Daily Quest',
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xffe5ccc5),
+        scaffoldBackgroundColor: Color(0xffefe7e7),
         primaryColor: Color(0xFF6d4c41),
         primaryColorDark: Color(0xFF40241a),
         primaryColorLight: Color(0xFF9c786c),
