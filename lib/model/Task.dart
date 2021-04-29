@@ -1,3 +1,4 @@
+import 'package:daily_quest/model/day.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/material.dart';
@@ -7,28 +8,86 @@ enum TaskFrequency {
   Daily,
   Weekly,
   Monthly,
-  Annual,
+  Yearly,
 }
 
 class Task {
 
-  final String title;
-  final String notes;
-  bool complete = false;
-  bool delayed = false;
-  IconData icon;
-  TaskFrequency taskType;
-  Duration delay;
+  String title;
+  String notes = "";
+  IconData icon = Icons.title;
+  TimeOfDay timeOccurrence;
   DateTime dateTime;
 
-  Task({
-    @required this.title,
-    this.notes = "",
-    this.icon = Icons.title,
-    @required this.taskType,
-    @required this.delay,
-    this.dateTime
-  });
+  TaskFrequency taskType;
+
+  //TODO Remove fixed delay in favor of a dynamically computed one
+  @deprecated
+  Duration _delay;
+
+  bool complete = false;
+  bool delayed = false;
+
+  /// Constructs a daily Task
+  /// Given a timeOccurrence
+  Task.daily(
+    this.title,
+    this.timeOccurrence,
+    [
+      this.notes,
+      this.icon,
+    ]
+  ) {
+    this.taskType = TaskFrequency.Daily;
+  }
+
+  /// Constructs a weekly Task
+  /// Given a [weekDay] and a [timeOccurrence]
+  Task.weekly(
+      this.title,
+      this.timeOccurrence,
+      DayOfWeek weekDay,
+      [
+        this.notes,
+        this.icon,
+      ]
+  ) {
+    dateTime = weekDay.thisWeekDateTime();
+  }
+
+  /// Constructs monthly Task
+  /// Given a [dayOfMonth] and a [timeOccurrence]
+  Task.monthly(
+      this.title,
+      this.timeOccurrence,
+      int dayOfMonth,
+      [
+        this.notes,
+        this.icon,
+      ]
+  ) {
+    DateTime current = DateTime.now();
+    int nextMonth = current.month == DateTime.december ? DateTime.january : current.month + 1;
+    dateTime = DateTime(current.year, nextMonth, dayOfMonth);
+  }
+
+  /// Constructs a yearly task
+  /// Given a [date] (only month and day parameters are used) and a [timeOccurrence]
+  Task.yearly(
+      this.title,
+      this.timeOccurrence,
+      DateTime date,
+      [
+        this.notes,
+        this.icon,
+      ]
+  ) {
+    DateTime current = DateTime.now();
+    if (current.isAfter(dateTime))
+      dateTime = DateTime(current.year + 1, date.month, date.day);
+    else
+      dateTime = DateTime(current.year, date.month, date.day);
+  }
 
   DateTime nextDateTime() {
     //initialize the date if it's null
@@ -36,13 +95,10 @@ class Task {
 
     //Check whether the set DateTime has already passed or not,
     //if it has update the DateTime to the next occurrence, return it and replace the old one
-    if (dateTime.isAfter(DateTime.now()))
-      return dateTime;
-    else {
-      DateTime next = dateTime.add(delay);
-      dateTime = next;
-      return next;
-    }
+    if (dateTime.isBefore(DateTime.now()))
+      dateTime = dateTime.add(_delay);
+
+    return dateTime;
   }
 
   static DateFormat getFormatter(TaskFrequency frequency) {
@@ -54,20 +110,21 @@ class Task {
         return Constants.weeklyFormat;
 
       case TaskFrequency.Monthly:
-      case TaskFrequency.Annual:
+      case TaskFrequency.Yearly:
       default:
         return Constants.monthlyFormat;
     }
   }
 
   ///JSON serialization
+  ///TODO Rework taking other constructors into account
   Task.fromJsonMap(Map<String, dynamic> json) :
         title = json["title"],
         notes = json["notes"],
         complete = json["complete"],
         icon = new IconData(json["icon"], fontFamily: "MaterialIcons"),
         taskType = UtilFunctions.getFrequencyFromString(json["frequency"]),
-        delay = Duration(seconds: json["delay"]);
+        _delay = Duration(seconds: json["delay"]);
 
   Map<String, dynamic> toJson() => {
     'title': title,
@@ -75,6 +132,6 @@ class Task {
     'complete': complete,
     'icon': icon.codePoint,
     'frequency': taskType.toString(),
-    'delay': delay.inSeconds
+    'delay': _delay.inSeconds
   };
 }

@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xFF6d4c41),
         primaryColorDark: Color(0xFF40241a),
         primaryColorLight: Color(0xFF9c786c),
-        accentColor: Color(0xff005dce),
+        accentColor: Color(0xff4C6D42),
+
         dialogBackgroundColor: Color(0xffe5ccc5),
         appBarTheme: AppBarTheme(brightness: Brightness.dark)
       ),

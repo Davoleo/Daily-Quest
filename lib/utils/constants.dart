@@ -1,3 +1,4 @@
+import 'package:daily_quest/model/day.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -49,14 +50,14 @@ class Constants {
     Icon(Icons.bar_chart),
   ];
 
-  static final List<String> weekDays = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+  static final List<DayOfWeek> weekDays = [
+    DayOfWeek("Monday", DateTime.monday),
+    DayOfWeek("Tuesday", DateTime.tuesday),
+    DayOfWeek("Wednesday", DateTime.wednesday),
+    DayOfWeek("Thursday", DateTime.thursday),
+    DayOfWeek("Friday", DateTime.friday),
+    DayOfWeek("Saturday", DateTime.saturday),
+    DayOfWeek("Sunday", DateTime.sunday),
   ];
 
   static init(BuildContext context) {

@@ -35,8 +35,11 @@ class AddEditTaskScreen extends StatefulWidget {
 
 class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
 
-  TaskFrequency category;
+
+  String title = "";
+  String notes = "";
   Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
+  TaskFrequency category = TaskFrequency.Daily;
 
   TimeOfDay _timeOccurence;
 
@@ -49,15 +52,17 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
       onPressed: () => showTimePicker(context: context, initialTime: _timeOccurence).then((value) {
         if (value != null) {
           setState(() {
+            print("Value is: " + value.toString());
             _timeOccurence = value;
           });
         }
       }),
       style: ButtonStyle(
-          shape: MaterialStateProperty.resolveWith((states) => RoundedRectangleBorder(
-            side: BorderSide(width: 1, style: BorderStyle.solid),
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-          ))
+        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+          side: BorderSide(width: 1, style: BorderStyle.solid),
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+        )),
+        overlayColor: MaterialStateProperty.all(Constants.primaryLight30)
       ),
       child: Text(
         "Task Occurrence: " + _timeOccurence.format(context),
@@ -72,11 +77,13 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
     final List<FittedBox> weekCheckboxes = List.generate(7, (index) => FittedBox(
       child: Row(
         children: [
-          Text(Constants.weekDays[index]),
+          Text(Constants.weekDays[index].name),
           //TODO Fix checkbox state changes
-          Checkbox(value: weekChoices[index], onChanged: (value) {setState(() {
-            weekChoices[index] = value;
-          });})
+          Checkbox(value: weekChoices[index], onChanged: (value) {
+            setState(() {
+              weekChoices[index] = value;
+            }
+            );})
         ],
       ),
     ));
@@ -184,7 +191,10 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         actions: [
           IconButton(
               icon: Icon(Icons.done),
-              onPressed: () => {}
+              onPressed: () {
+                //TODO Build new task
+                Task newTask;
+              }
           ),
         ],
       ),
