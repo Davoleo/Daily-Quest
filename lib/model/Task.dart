@@ -13,18 +13,23 @@ enum TaskFrequency {
 
 class Task {
 
+  //Properties
   String title;
   String notes = "";
   IconData icon = Icons.title;
-  TimeOfDay timeOccurrence;
-  DateTime dateTime;
+  List<DateTime> occurrences;
 
+  //Type of task
   TaskFrequency taskType;
+  bool advanced = false;
 
   //TODO Remove fixed delay in favor of a dynamically computed one
   @deprecated
   Duration _delay;
+  //Extra
+  bool anticipateOccurrenceOnShorterMonths = false;
 
+  //State
   bool complete = false;
   bool delayed = false;
 
@@ -32,12 +37,16 @@ class Task {
   /// Given a timeOccurrence
   Task.daily(
     this.title,
-    this.timeOccurrence,
+    TimeOfDay timeOccurrence,
     [
       this.notes,
       this.icon,
     ]
   ) {
+    DateTime current = DateTime.now();
+    occurrences = [
+      DateTime(current.year, current.month, current.day, timeOccurrence.hour, timeOccurrence.minute)
+    ];
     this.taskType = TaskFrequency.Daily;
   }
 
@@ -45,37 +54,42 @@ class Task {
   /// Given a [weekDay] and a [timeOccurrence]
   Task.weekly(
       this.title,
-      this.timeOccurrence,
+      TimeOfDay timeOccurrence,
       DayOfWeek weekDay,
       [
         this.notes,
         this.icon,
       ]
   ) {
-    dateTime = weekDay.thisWeekDateTime();
+    occurrences = [
+      weekDay.thisWeekDateTime(timeOccurrence)
+    ];
   }
 
   /// Constructs monthly Task
   /// Given a [dayOfMonth] and a [timeOccurrence]
   Task.monthly(
       this.title,
-      this.timeOccurrence,
+      TimeOfDay timeOccurrence,
       int dayOfMonth,
       [
         this.notes,
         this.icon,
+        this.anticipateOccurrenceOnShorterMonths,
       ]
   ) {
     DateTime current = DateTime.now();
     int nextMonth = current.month == DateTime.december ? DateTime.january : current.month + 1;
-    dateTime = DateTime(current.year, nextMonth, dayOfMonth);
+    occurrences = [
+      DateTime(current.year, nextMonth, dayOfMonth, timeOccurrence.hour, timeOccurrence.minute)
+    ];
   }
 
   /// Constructs a yearly task
   /// Given a [date] (only month and day parameters are used) and a [timeOccurrence]
   Task.yearly(
       this.title,
-      this.timeOccurrence,
+      TimeOfDay timeOccurrence,
       DateTime date,
       [
         this.notes,
@@ -83,22 +97,65 @@ class Task {
       ]
   ) {
     DateTime current = DateTime.now();
+    DateTime dateTime;
     if (current.isAfter(dateTime))
-      dateTime = DateTime(current.year + 1, date.month, date.day);
+      dateTime = DateTime(current.year + 1, date.month, date.day, timeOccurrence.hour, timeOccurrence.minute);
     else
-      dateTime = DateTime(current.year, date.month, date.day);
+      dateTime = DateTime(current.year, date.month, date.day, timeOccurrence.hour, timeOccurrence.minute);
+    occurrences = [dateTime];
+  }
+
+  /// Adds a list of occurrences to the same task
+  void setAdvanced(List<DateTime> additional) {
+    advanced = true;
+    additional.forEach((element) {
+      if (occurrences[0] != element)
+        occurrences.add(element);
+    });
   }
 
   DateTime nextDateTime() {
-    //initialize the date if it's null
-    dateTime = dateTime == null ? DateTime.now() : dateTime;
+    DateTime next;
+    occurrences.forEach((datetime) {
+      if (datetime.isAfter(DateTime.now()))
+        next = datetime;
+    });
 
-    //Check whether the set DateTime has already passed or not,
-    //if it has update the DateTime to the next occurrence, return it and replace the old one
-    if (dateTime.isBefore(DateTime.now()))
-      dateTime = dateTime.add(_delay);
+    if (next == null) {
+      _updateAllTaskOccurrences();
+      return nextDateTime();
+    }
+    else return next;
+  }
 
-    return dateTime;
+  void _updateAllTaskOccurrences() {
+    occurrences.forEach((datetime) {
+      if (datetime.isBefore(DateTime.now())) {
+        switch(taskType) {
+          case TaskFrequency.Daily:
+            datetime = datetime.add(Duration(days: 1));
+            break;
+          case TaskFrequency.Weekly:
+            datetime = datetime.add(Duration(days: 7));
+            break;
+          case TaskFrequency.Monthly:
+            int newMonth = datetime.month == DateTime.december ? DateTime.january : datetime.month + 1;
+            int monthDays = getDayCountForMonthNumber(datetime.year, newMonth);
+            int day = datetime.day;
+            if (day > monthDays) {
+              if (anticipateOccurrenceOnShorterMonths)
+                day = monthDays;
+              else
+                newMonth++;
+            }
+            datetime = DateTime(datetime.year, newMonth, day, datetime.hour, datetime.minute);
+            break;
+          case TaskFrequency.Yearly:
+            datetime = DateTime(datetime.year + 1, datetime.month, datetime.day, datetime.hour, datetime.minute);
+            break;
+        }
+      }
+    });
   }
 
   static DateFormat getFormatter(TaskFrequency frequency) {

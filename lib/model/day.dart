@@ -8,7 +8,7 @@ class DayOfWeek {
 
   DayOfWeek(this.name, this.ordinal);
 
-  DateTime thisWeekDateTime() {
+  DateTime thisWeekDateTime(TimeOfDay time) {
     DateTime current =  DateTime.now();
     int daysInBetween;
     if (ordinal > current.weekday)
@@ -16,5 +16,20 @@ class DayOfWeek {
     else
       daysInBetween = DateTime.daysPerWeek - current.weekday + ordinal;
     return current.add(Duration(days: daysInBetween));
+  }
+}
+
+int getDayCountForMonthNumber(int year, int month) {
+  bool leap = year % 4 == 0;
+  switch(month) {
+    case DateTime.february:
+      return leap ? 29 : 28;
+    case DateTime.november:
+    case DateTime.april:
+    case DateTime.june:
+    case DateTime.september:
+      return 30;
+    default:
+      return 31;
   }
 }
