@@ -23,15 +23,11 @@ class Task {
   TaskFrequency taskType;
   bool advanced = false;
 
-  //TODO Remove fixed delay in favor of a dynamically computed one
-  @deprecated
-  Duration _delay;
   //Extra
   bool anticipateOccurrenceOnShorterMonths = false;
 
   //State
   bool complete = false;
-  bool delayed = false;
 
   /// Constructs a daily Task
   /// Given a timeOccurrence
@@ -173,22 +169,29 @@ class Task {
     }
   }
 
-  ///JSON serialization
-  ///TODO Rework taking other constructors into account
+  ///JSON deserialization
   Task.fromJsonMap(Map<String, dynamic> json) :
         title = json["title"],
         notes = json["notes"],
         complete = json["complete"],
         icon = new IconData(json["icon"], fontFamily: "MaterialIcons"),
         taskType = UtilFunctions.getFrequencyFromString(json["frequency"]),
-        _delay = Duration(seconds: json["delay"]);
+        occurrences = List.generate(json["occurrences"].length, (i) => DateTime.fromMillisecondsSinceEpoch(json["occurrences"][i])),
+        advanced = json["occurrences"].length > 1
+  {
+    if (taskType == TaskFrequency.Monthly)
+      anticipateOccurrenceOnShorterMonths = json["monthly_anticipate"];
+    else
+      anticipateOccurrenceOnShorterMonths = false;
+  }
 
+  ///JSON Serialization
   Map<String, dynamic> toJson() => {
     'title': title,
     'notes': notes,
     'complete': complete,
     'icon': icon.codePoint,
     'frequency': taskType.toString(),
-    'delay': _delay.inSeconds
+    'occurrences': List.generate(occurrences.length, (index) => occurrences[index].millisecondsSinceEpoch),
   };
 }
