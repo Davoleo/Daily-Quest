@@ -1,5 +1,6 @@
 import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/IconPicker.dart';
+import 'package:daily_quest/ui/component/TimeOccurrencesSelectors.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -35,43 +36,17 @@ class AddEditTaskScreen extends StatefulWidget {
 
 class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
 
-
   String title = "";
   String notes = "";
   Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
   TaskFrequency category = TaskFrequency.Daily;
 
-  TimeOfDay _timeOccurence;
-
   @override
   Widget build(BuildContext context) {
 
-    _timeOccurence = TimeOfDay(hour: widget.edit ? widget.previousTask.dateTime.hour : 0, minute: widget.edit ? widget.previousTask.dateTime.minute : 0);
+    List<TimeOccurrenceButton> timeOccButtons;
+    //TODO Implement this list
 
-    TextButton timeOccurranceButton = TextButton(
-      onPressed: () => showTimePicker(context: context, initialTime: _timeOccurence).then((value) {
-        if (value != null) {
-          setState(() {
-            print("Value is: " + value.toString());
-            _timeOccurence = value;
-          });
-        }
-      }),
-      style: ButtonStyle(
-        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-          side: BorderSide(width: 1, style: BorderStyle.solid),
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-        )),
-        overlayColor: MaterialStateProperty.all(Constants.primaryLight30)
-      ),
-      child: Text(
-        "Task Occurrence: " + _timeOccurence.format(context),
-        style: TextStyle(
-          color: Theme.of(context).primaryColorDark,
-          fontSize: 18,
-        ),
-      ),
-    );
 
     List<bool> weekChoices = new List.filled(7, false);
     final List<FittedBox> weekCheckboxes = List.generate(7, (index) => FittedBox(
@@ -93,9 +68,15 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
 
     switch(category) {
       case TaskFrequency.Daily:
-        frequencyConfig = Container(
-          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-          child: timeOccurranceButton
+        frequencyConfig = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text("Daily Task Configuration", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+              child: TextButton(onPressed: null, child: Text("temp"))
+            )
+          ],
         );
         break;
       case TaskFrequency.Weekly:
@@ -103,7 +84,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           padding: const EdgeInsets.only(top: 25),
           child: Column(
             children: [
-              timeOccurranceButton,
+              TextButton(onPressed: null, child: Text("temp")),
               Wrap(
                 direction: Axis.horizontal,
                 children: weekCheckboxes,
@@ -172,10 +153,18 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                     });
                   },
                 ),
-              )
+              ),
             ],
           ),
-          frequencyConfig
+          Container(
+            margin: EdgeInsets.only(top: 30),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).primaryColorDark),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: frequencyConfig,
+          )
         ],
       ),
     );
