@@ -14,7 +14,7 @@ enum TaskFrequency {
 class Task {
 
   //Properties
-  String title;
+  final String title;
   String notes = "";
   IconData icon = Icons.title;
   List<DateTime> occurrences;
@@ -57,6 +57,7 @@ class Task {
         this.icon,
       ]
   ) {
+    this.taskType = TaskFrequency.Weekly;
     occurrences = [
       weekDay.thisWeekDateTime(timeOccurrence)
     ];
@@ -74,6 +75,7 @@ class Task {
         this.anticipateOccurrenceOnShorterMonths,
       ]
   ) {
+    taskType = TaskFrequency.Monthly;
     DateTime current = DateTime.now();
     int nextMonth = current.month == DateTime.december ? DateTime.january : current.month + 1;
     occurrences = [
@@ -92,6 +94,7 @@ class Task {
         this.icon,
       ]
   ) {
+    taskType = TaskFrequency.Yearly;
     DateTime current = DateTime.now();
     DateTime dateTime;
     if (current.isAfter(dateTime))
