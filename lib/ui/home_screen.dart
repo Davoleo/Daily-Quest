@@ -60,19 +60,19 @@ class _HomePageState extends State<HomePage> {
               if (!snapshot.hasData)
                 return Center(child: Text("No data to load!"));
               return ListView.separated(
-                  itemCount: snapshot.data.length,
-                  separatorBuilder: (_, index) => Divider(
-                    color: Theme.of(context).primaryColorDark,
-                    height: 1,
-                    indent: Constants.dividerHPadding,
-                    endIndent: Constants.dividerHPadding,
-                  ),
-                  itemBuilder: (_, index) {
-                    if (index < snapshot.data.length)
-                      return TaskView(snapshot.data[index], removeTask);
-                    else
-                      return null;
-                  }
+                itemCount: snapshot.data.length,
+                separatorBuilder: (_, index) => Divider(
+                  color: Theme.of(context).primaryColorDark,
+                  height: 1,
+                  indent: Constants.dividerHPadding,
+                  endIndent: Constants.dividerHPadding,
+                ),
+                itemBuilder: (_, index) {
+                  if (index < snapshot.data.length)
+                    return TaskView(snapshot.data[index], removeTask);
+                  else
+                    return null;
+                },
               );
             }
             else {

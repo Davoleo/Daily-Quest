@@ -1,4 +1,5 @@
 import 'package:daily_quest/model/Task.dart';
+import 'package:flutter/material.dart';
 
 abstract class UtilFunctions {
   static TaskFrequency getFrequencyFromString(String freqString) {
@@ -17,5 +18,9 @@ abstract class UtilFunctions {
 
   static List<Map<String, dynamic>> serializeAllTasks(List<Task> tasks) {
     return tasks.map((task) => task.toJson()).toList();
+  }
+
+  static TimeOfDay timeOfDate(DateTime datetime) {
+    return TimeOfDay(hour: datetime.hour, minute: datetime.minute);
   }
 }

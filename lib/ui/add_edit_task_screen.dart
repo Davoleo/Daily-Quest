@@ -1,7 +1,8 @@
 import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/IconPicker.dart';
-import 'package:daily_quest/ui/component/TimeOccurrencesSelectors.dart';
+import 'package:daily_quest/ui/component/TimeOccurrenceSelectors.dart';
 import 'package:daily_quest/utils/constants.dart';
+import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/material.dart';
 
 class AddEditTaskScreen extends StatefulWidget {
@@ -40,20 +41,34 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   String notes = "";
   Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
   TaskFrequency category = TaskFrequency.Daily;
+  int maxOccurrences;
+
+  List<bool> weekChoices = new List.filled(7, false);
 
   @override
   Widget build(BuildContext context) {
+    switch(category) {
+      case TaskFrequency.Daily:
+        maxOccurrences = 12;
+        break;
+      case TaskFrequency.Weekly:
+        maxOccurrences = 7;
+        break;
+      case TaskFrequency.Monthly:
+        maxOccurrences = 1;
+        break;
+      case TaskFrequency.Yearly:
+        maxOccurrences = 10;
+        break;
+    }
 
-    List<TimeOccurrenceButton> timeOccButtons;
-    //TODO Implement this list
+    List<TimeOfDay> _occList = widget.previousTask == null ? null : widget.previousTask.occurrences.map(UtilFunctions.timeOfDate);
+    TimeOccurrenceSelectors timeOccButtons = new TimeOccurrenceSelectors(maxOccurrences, _occList);
 
-
-    List<bool> weekChoices = new List.filled(7, false);
     final List<FittedBox> weekCheckboxes = List.generate(7, (index) => FittedBox(
       child: Row(
         children: [
           Text(Constants.weekDays[index].name),
-          //TODO Fix checkbox state changes
           Checkbox(value: weekChoices[index], onChanged: (value) {
             setState(() {
               weekChoices[index] = value;
@@ -74,7 +89,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             Text("Daily Task Configuration", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
             Container(
               padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-              child: TextButton(onPressed: null, child: Text("temp"))
+              child: timeOccButtons
             )
           ],
         );
@@ -84,7 +99,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           padding: const EdgeInsets.only(top: 25),
           child: Column(
             children: [
-              TextButton(onPressed: null, child: Text("temp")),
+              timeOccButtons,
               Wrap(
                 direction: Axis.horizontal,
                 children: weekCheckboxes,
@@ -131,6 +146,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                     setState(() {
                       if (choice != null)
                         currentIcon = choice;
+                      //Clear focus from the text field so that it doesn't go back to it
+                      FocusScope.of(context).requestFocus(FocusNode());
                     });
                   }),
                 ],
@@ -149,6 +166,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                   items: widget._categories,
                   onChanged: (value) {
                     setState(() {
+                      //Clear focus from the text field so that it doesn't go back to it
+                      FocusScope.of(context).requestFocus(FocusNode());
                       category = value;
                     });
                   },
