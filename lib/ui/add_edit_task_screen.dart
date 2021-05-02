@@ -1,8 +1,10 @@
 import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/IconPicker.dart';
+import 'package:daily_quest/ui/component/SmartCheckbox.dart';
 import 'package:daily_quest/ui/component/TimeOccurrenceSelectors.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/functions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AddEditTaskScreen extends StatefulWidget {
@@ -11,6 +13,8 @@ class AddEditTaskScreen extends StatefulWidget {
   final Task previousTask;
 
   final List<DropdownMenuItem<TaskFrequency>> _categories = [];
+
+  final SizedBox _separatorBox20 = SizedBox(height: 20,);
 
   AddEditTaskScreen(this.edit, [this.previousTask])
   {
@@ -65,18 +69,19 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
     List<TimeOfDay> _occList = widget.previousTask == null ? null : widget.previousTask.occurrences.map(UtilFunctions.timeOfDate);
     TimeOccurrenceSelectors timeOccButtons = new TimeOccurrenceSelectors(maxOccurrences, _occList);
 
-    final List<FittedBox> weekCheckboxes = List.generate(7, (index) => FittedBox(
-      child: Row(
-        children: [
-          Text(Constants.weekDays[index].name),
-          Checkbox(value: weekChoices[index], onChanged: (value) {
+    final List<SCheckbox> weekCheckboxes = List.generate(
+        7, (index) =>
+        SCheckbox(
+          label: Constants.weekDays[index].name,
+          value: weekChoices[index],
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          onChanged: (value) {
             setState(() {
               weekChoices[index] = value;
-            }
-            );})
-        ],
-      ),
-    ));
+            });
+          },
+        )
+    );
 
 
     Widget frequencyConfig;
@@ -95,17 +100,18 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         );
         break;
       case TaskFrequency.Weekly:
-        frequencyConfig = Padding(
-          padding: const EdgeInsets.only(top: 25),
-          child: Column(
-            children: [
-              timeOccButtons,
-              Wrap(
-                direction: Axis.horizontal,
-                children: weekCheckboxes,
-              )
-            ],
-          ),
+        frequencyConfig = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text("Weekly Task Configuration", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+            widget._separatorBox20,
+            timeOccButtons,
+            widget._separatorBox20,
+            Wrap(
+              direction: Axis.horizontal,
+              children: weekCheckboxes,
+            )
+          ],
         );
         break;
       default:
