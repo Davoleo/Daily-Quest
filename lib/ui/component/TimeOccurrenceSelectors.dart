@@ -53,20 +53,46 @@ class _TimeOccurrenceSelectorsState extends State<TimeOccurrenceSelectors> {
         children: [
           Wrap(
             children: List.generate(currentTimeList.length, (index) {
-              return TextButton(
-                onPressed: () => showTimePicker(context: context, initialTime: currentTimeList[index]).then((value) {
-                  if (value != null) {
-                    setState(() {
-                      print("Value is: " + value.toString());
-                      currentTimeList[index] = value;
-                    });
-                  }
-                }),
-                style: widget._flatButtonStyle,
-                child: Text(
-                  "Task Occurrence: " + (currentTimeList[index].format(context)),
-                  style: widget._flatButtonTextStyle(context),
-                ),
+              return Row(
+                children: [
+                  TextButton(
+                    onPressed: () => showTimePicker(context: context, initialTime: currentTimeList[index]).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          print("Value is: " + value.toString());
+                          currentTimeList[index] = value;
+                        });
+                      }
+                    }),
+                    style: widget._flatButtonStyle,
+                    child: Text(
+                      "Task Occurrence: " + (currentTimeList[index].format(context)),
+                      style: widget._flatButtonTextStyle(context),
+                    ),
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: DecoratedBox(
+                      child: IconButton(
+                        icon: Icon(Icons.delete_outline),
+                        onPressed: () {
+                          setState(() {
+                            currentTimeList.removeAt(index);
+                          });
+                        },
+                        iconSize: 20,
+                      ),
+                      decoration: ShapeDecoration(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(width: 1, style: BorderStyle.solid),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               );
             }),
           ),
