@@ -39,7 +39,8 @@ class AddEditTaskScreen extends StatefulWidget {
   _AddEditTaskScreenState createState() => _AddEditTaskScreenState();
 }
 
-class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
+class _AddEditTaskScreenState extends State<AddEditTaskScreen>
+    with SingleTickerProviderStateMixin {
 
   String title = "";
   String notes = "";
@@ -181,14 +182,19 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               ),
             ],
           ),
-          Container(
-            margin: EdgeInsets.only(top: 30),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColorDark),
-              borderRadius: BorderRadius.circular(8),
+          AnimatedSize(
+            duration: Duration(milliseconds: 500),
+            clipBehavior: Clip.hardEdge,
+            vsync: this,
+            child: Container(
+              margin: EdgeInsets.only(top: 30),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).primaryColorDark),
+                borderRadius: BorderRadius.circular(8)
+              ),
+              child: frequencyConfig,
             ),
-            child: frequencyConfig,
           )
         ],
       ),
