@@ -2,6 +2,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 @immutable
+class Month {
+  final String name;
+  final int ordinal;
+
+  Month(this.name, this.ordinal);
+
+  @override
+  String toString() {
+    return name;
+  }
+}
+
+@immutable
 class DayOfWeek {
   final String name;
   final int ordinal;

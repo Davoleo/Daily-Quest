@@ -1,36 +1,47 @@
 import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/ui/component/IconPicker.dart';
 import 'package:daily_quest/ui/component/SmartCheckbox.dart';
-import 'package:daily_quest/ui/component/TimeOccurrenceSelectors.dart';
+import 'package:daily_quest/ui/component/TimeOccurrenceButton.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AddEditTaskScreen extends StatefulWidget {
-
   final bool edit;
   final Task? previousTask;
 
   final List<DropdownMenuItem<TaskFrequency>> _categories = [];
 
-  final SizedBox _separatorBox20 = SizedBox(height: 20,);
+  final SizedBox _separatorBox20 = SizedBox(
+    height: 20,
+  );
+  final TextStyle _taskConfigurationTitleStyle =
+      TextStyle(fontSize: 18, fontWeight: FontWeight.w500);
 
-  AddEditTaskScreen(this.edit, [this.previousTask])
-  {
+  AddEditTaskScreen(this.edit, [this.previousTask]) {
     for (TaskFrequency freq in TaskFrequency.values) {
       String catName = freq.toString().split('.').last;
-      _categories.add(new DropdownMenuItem(child: Text(catName), value: freq,));
+      _categories.add(new DropdownMenuItem(
+        child: Text(catName),
+        value: freq,
+      ));
     }
   }
 
   Future<Icon?> _showIconPicker(context) async {
-    Icon? choice = await showDialog<Icon>(context: context, builder: (BuildContext context) {
-      return IconPicker(
-        title: const Text("Select an Icon", style: TextStyle(fontSize: 24),),
-        icons: Constants.supportedTaskIcons,
-      );
-    });
+    Icon? choice = await showDialog<Icon>(
+        context: context,
+        builder: (BuildContext context) {
+          return IconPicker(
+            title: const Text(
+              "Select an Icon",
+              style: TextStyle(fontSize: 24),
+            ),
+            icons: Constants.supportedTaskIcons,
+          );
+        });
 
     return choice;
   }
@@ -41,79 +52,103 @@ class AddEditTaskScreen extends StatefulWidget {
 
 class _AddEditTaskScreenState extends State<AddEditTaskScreen>
     with SingleTickerProviderStateMixin {
-
   String title = "";
   String notes = "";
   Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
   TaskFrequency category = TaskFrequency.Daily;
-  late int maxOccurrences;
-  bool advanced = false;
 
-  List<bool> weekChoices = new List.filled(7, false);
+  //Weekly configuration
+  List<bool> weekChoices = new List.filled(DateTime.daysPerWeek, false);
 
-  String advancedCheckboxLabel = "";
+  //Month Configuration
+  int dayOfMonth = 1;
+  TextEditingController dayController = TextEditingController(text: "1");
+
+  //Yearly Configuration
+  List<bool> monthChoices = new List.filled(DateTime.monthsPerYear, false);
+
+  @override
+  void initState() {
+    super.initState();
+    dayController.addListener(() {
+      if (dayController.text.isEmpty)
+        return;
+      int parsed = int.parse(dayController.text);
+      if (parsed > 0 && parsed <= 31)
+        dayOfMonth = parsed;
+      else {
+        setState(() {
+          dayController.text = dayOfMonth.toString();
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    switch(category) {
-      case TaskFrequency.Daily:
-        maxOccurrences = 12;
-        advancedCheckboxLabel = "Allow multiple occurrences per day";
-        break;
-      case TaskFrequency.Weekly:
-        maxOccurrences = 7;
-        advancedCheckboxLabel = "Allow multiple occurrences per week";
-        break;
-      case TaskFrequency.Monthly:
-        maxOccurrences = 1;
-        advancedCheckboxLabel = "Anticipate occurrence on shorter months";
-        break;
-      case TaskFrequency.Yearly:
-        maxOccurrences = 10;
-        advancedCheckboxLabel = "Multiple Months per year";
-        break;
-    }
-
-    List<TimeOfDay>? _occList = widget.previousTask == null ? null : widget.previousTask!.occurrences.map(UtilFunctions.timeOfDate).toList();
-    TimeOccurrenceSelectors timeOccButtons = new TimeOccurrenceSelectors(advanced ? maxOccurrences : 1, _occList);
+    //TimeOccurrenceSelectors timeOccButtons = new TimeOccurrenceSelectors(advanced ? maxOccurrences : 1, _occList);
 
     final List<SCheckbox> weekCheckboxes = List.generate(
-        7, (index) =>
-        SCheckbox(
-          label: Constants.weekDays[index].name,
-          value: weekChoices[index],
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          onChanged: (value) {
-            setState(() {
-              if (value != null)
-                weekChoices[index] = value;
-            });
-          },
-        )
-    );
+        DateTime.daysPerWeek,
+        (index) => SCheckbox(
+              label: Constants.weekDays[index].name,
+              value: weekChoices[index],
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    weekChoices[index] = value;
+                  });
+                }
+              },
+            ));
 
+    final List<SCheckbox> monthCheckboxes = List.generate(
+        DateTime.monthsPerYear,
+        (index) => SCheckbox(
+              label: Constants.months[index].name,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              value: monthChoices[index],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    monthChoices[index] = value;
+                  });
+                }
+              },
+            ));
 
     Widget frequencyConfig;
+    TimeOfDay? prevTaskTime = widget.previousTask != null
+        ? UtilFunctions.timeOfDate(widget.previousTask!.occurrence)
+        : null;
 
-    switch(category) {
+    switch (category) {
       case TaskFrequency.Daily:
         frequencyConfig = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text("Daily Task Configuration", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+            Text(
+              "Daily Task Configuration",
+              style: widget._taskConfigurationTitleStyle,
+            ),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-              child: timeOccButtons
-            )
+                padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                child: TimeOccurrenceButton(prevTaskTime))
           ],
         );
         break;
+
       case TaskFrequency.Weekly:
         frequencyConfig = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text("Weekly Task Configuration", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+            Text(
+              "Weekly Task Configuration",
+              style: widget._taskConfigurationTitleStyle,
+            ),
             widget._separatorBox20,
-            timeOccButtons,
+            TimeOccurrenceButton(prevTaskTime),
             widget._separatorBox20,
             Wrap(
               direction: Axis.horizontal,
@@ -122,10 +157,52 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
           ],
         );
         break;
+
+      case TaskFrequency.Monthly:
+        frequencyConfig = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              "Monthly Task Configuration",
+              style: widget._taskConfigurationTitleStyle,
+            ),
+            widget._separatorBox20,
+            TimeOccurrenceButton(prevTaskTime),
+            widget._separatorBox20,
+            TextField(
+              controller: dayController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly
+              ],
+            )
+          ],
+        );
+        break;
+
+      case TaskFrequency.Yearly:
+        frequencyConfig = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              "Yearly Task Configuration",
+              style: widget._taskConfigurationTitleStyle,
+            ),
+            widget._separatorBox20,
+            TimeOccurrenceButton(prevTaskTime),
+            widget._separatorBox20,
+            Wrap(
+              direction: Axis.horizontal,
+              children: monthCheckboxes,
+            )
+          ],
+        );
+        break;
+      case TaskFrequency.Yearly:
+
       default:
         frequencyConfig = Container();
     }
-
 
     Container content = Container(
       color: Constants.primaryLight30,
@@ -154,16 +231,22 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Icon: ", style: TextStyle(fontSize: 18),),
-                  IconButton(icon: currentIcon, onPressed: () async {
-                    Icon? choice = await widget._showIconPicker(context);
-                    setState(() {
-                      if (choice != null)
-                        currentIcon = choice;
-                      //Clear focus from the text field so that it doesn't go back to it
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    });
-                  }),
+                  Text(
+                    "Icon: ",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  IconButton(
+                      icon: currentIcon,
+                      onPressed: () async {
+                        Icon? choice = await widget._showIconPicker(context);
+                        if (choice != null) {
+                          setState(() {
+                            currentIcon = choice;
+                            //Clear focus from the text field so that it doesn't go back to it
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          });
+                        }
+                      }),
                 ],
               ),
               ConstrainedBox(
@@ -172,40 +255,31 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
                 child: DropdownButtonFormField<TaskFrequency>(
                   decoration: InputDecoration(
                       border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, style: BorderStyle.solid)
-                      ),
-                      labelText: "Task Type"
-                  ),
+                          borderSide:
+                              BorderSide(width: 1, style: BorderStyle.solid)),
+                      labelText: "Task Type"),
                   value: category,
                   items: widget._categories,
                   onChanged: (value) {
                     setState(() {
                       //Clear focus from the text field so that it doesn't go back to it
                       FocusScope.of(context).requestFocus(FocusNode());
-                      if (value != null)
-                        category = value;
+                      if (value != null) category = value;
                     });
                   },
                 ),
               ),
-              SCheckbox(label: advancedCheckboxLabel, value: advanced, onChanged: (value) {
-                setState(() {
-                  advanced = !advanced;
-                });
-              })
             ],
           ),
           AnimatedSize(
-            duration: Duration(milliseconds: 500),
-            clipBehavior: Clip.hardEdge,
+            duration: Duration(milliseconds: 750),
             vsync: this,
             child: Container(
               margin: EdgeInsets.only(top: 30),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).primaryColorDark),
-                borderRadius: BorderRadius.circular(8)
-              ),
+                  border: Border.all(color: Theme.of(context).primaryColorDark),
+                  borderRadius: BorderRadius.circular(8)),
               child: frequencyConfig,
             ),
           )
@@ -213,10 +287,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
       ),
     );
 
-
-    if (!widget.edit) {
-
-    }
+    if (!widget.edit) {}
 
     return Scaffold(
       appBar: AppBar(
@@ -227,8 +298,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               onPressed: () {
                 //TODO Build new task
                 Task newTask;
-              }
-          ),
+              }),
         ],
       ),
       body: content,

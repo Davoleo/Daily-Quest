@@ -50,6 +50,21 @@ class Constants {
     Icon(Icons.bar_chart),
   ];
 
+  static final List<Month> months = [
+    Month("January", DateTime.january),
+    Month("February", DateTime.february),
+    Month("March", DateTime.march),
+    Month("April", DateTime.april),
+    Month("May", DateTime.may),
+    Month("June", DateTime.june),
+    Month("July", DateTime.july),
+    Month("August", DateTime.august),
+    Month("September", DateTime.september),
+    Month("October", DateTime.october),
+    Month("November", DateTime.november),
+    Month("December", DateTime.december),
+  ];
+
   static final List<DayOfWeek> weekDays = [
     DayOfWeek("Monday", DateTime.monday),
     DayOfWeek("Tuesday", DateTime.tuesday),

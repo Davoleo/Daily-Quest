@@ -22,9 +22,12 @@ class MyApp extends StatelessWidget {
         primaryColorDark: Color(0xFF40241a),
         primaryColorLight: Color(0xFF9c786c),
         accentColor: Color(0xff4C6D42),
+        brightness: Brightness.light,
+        primarySwatch: Colors.green,
 
         dialogBackgroundColor: Color(0xffe5ccc5),
-        appBarTheme: AppBarTheme(brightness: Brightness.dark)
+        appBarTheme: AppBarTheme(brightness: Brightness.dark),
+
       ),
       home: HomePage(),
     );
