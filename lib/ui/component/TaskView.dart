@@ -18,9 +18,6 @@ class _TaskViewState extends State<TaskView> {
   Widget build(BuildContext context) {
     Color darkPrimary = Theme.of(context).primaryColorDark;
 
-    if (widget.task.complete == null)
-      widget.task.complete = false;
-
     return Container(
       child: Dismissible(
         key: ValueKey(widget.task.title),
@@ -71,7 +68,8 @@ class _TaskViewState extends State<TaskView> {
                   value: widget.task.complete,
                   onChanged: (isChecked) {
                     setState(() {
-                      widget.task.complete = isChecked;
+                      if (isChecked != null)
+                        widget.task.complete = isChecked;
                     });
                   },
                   activeColor: darkPrimary,

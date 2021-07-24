@@ -6,7 +6,7 @@ import 'package:daily_quest/utils/data_io.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -53,14 +53,14 @@ class _HomePageState extends State<HomePage> {
         child: FutureBuilder(
           future: loadData(),
           builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+            if (snapshot.hasError)
+              return Center(child: Text("An error occurred while loading data\nError: " + snapshot.error.toString()));
+            if (!snapshot.hasData)
+              return Center(child: Text("No data to load!"));
             if (snapshot.connectionState == ConnectionState.done) {
-              this.taskList = snapshot.data;
-              if (snapshot.hasError)
-                return Center(child: Text("An error occurred while loading data\nError: " + snapshot.error.toString()));
-              if (!snapshot.hasData)
-                return Center(child: Text("No data to load!"));
+              this.taskList = snapshot.data!;
               return ListView.separated(
-                itemCount: snapshot.data.length,
+                itemCount: snapshot.data!.length,
                 separatorBuilder: (_, index) => Divider(
                   color: Theme.of(context).primaryColorDark,
                   height: 1,
@@ -68,15 +68,15 @@ class _HomePageState extends State<HomePage> {
                   endIndent: Constants.dividerHPadding,
                 ),
                 itemBuilder: (_, index) {
-                  if (index < snapshot.data.length)
-                    return TaskView(snapshot.data[index], removeTask);
+                  if (index < snapshot.data!.length)
+                    return TaskView(snapshot.data![index], removeTask);
                   else
-                    return null;
+                    return Center(child: Text("No data to load!"));
                 },
               );
             }
             else {
-              return CircularProgressIndicator();
+              return Center(child: CircularProgressIndicator());
             }
           },
         ),

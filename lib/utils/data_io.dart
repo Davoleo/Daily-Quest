@@ -5,10 +5,10 @@ import 'package:daily_quest/model/Task.dart';
 import 'package:daily_quest/utils/functions.dart';
 import 'package:path_provider/path_provider.dart';
 
-JsonEncoder encoder;
+late JsonEncoder encoder;
 
-Directory dataDir;
-File jsonFile;
+late Directory dataDir;
+late File jsonFile;
 bool isReady = false;
 
 void initFileConnection(Function callback) {

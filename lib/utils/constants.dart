@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class Constants {
-  static Color primaryLight30;
-  static SystemUiOverlayStyle statusBar;
+  static late Color primaryLight30;
+  static late SystemUiOverlayStyle statusBar;
   static const double dividerHPadding = 16;
 
   static DateFormat dailyFormat = DateFormat("HH:mm");

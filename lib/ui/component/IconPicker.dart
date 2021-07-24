@@ -21,18 +21,18 @@ class IconPicker extends StatelessWidget {
   final EdgeInsetsGeometry titlePadding = const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0);
   final EdgeInsetsGeometry contentPadding = const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 16.0);
 
-  final Color backgroundColor;
-  final double elevation;
+  final Color? backgroundColor;
+  final double? elevation;
 
   final Clip clipBehaviour;
-  final ShapeBorder shapeBorder;
+  final ShapeBorder? shapeBorder;
 
   final EdgeInsets insetPadding = const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final TextDirection textDirection = Directionality.maybeOf(context);
+    final TextDirection? textDirection = Directionality.maybeOf(context);
 
     List<Widget> dialogOptions = [];
     icons.forEach((icon) {
@@ -53,7 +53,7 @@ class IconPicker extends StatelessWidget {
         bottom: effectiveTitlePadding.bottom,
       ),
       child: DefaultTextStyle(
-        style: DialogTheme.of(context).titleTextStyle ?? theme.textTheme.headline6,
+        style: DialogTheme.of(context).titleTextStyle ?? theme.textTheme.headline6!,
         child: Semantics(child: title),
       ),
     );

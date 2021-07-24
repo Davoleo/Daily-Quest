@@ -1,6 +1,7 @@
 import 'package:daily_quest/utils/constants.dart';
 import 'package:flutter/material.dart';
 
+@deprecated
 class TimeOccurrenceSelectors extends StatefulWidget {
 
   final _flatButtonStyle = ButtonStyle(
@@ -16,7 +17,7 @@ class TimeOccurrenceSelectors extends StatefulWidget {
     fontSize: 18,
   );
 
-  final List<TimeOfDay> prevTimeList;
+  final List<TimeOfDay>? prevTimeList;
   final int maxOccurrences;
 
   TimeOccurrenceSelectors(this.maxOccurrences, [this.prevTimeList]);
@@ -25,14 +26,15 @@ class TimeOccurrenceSelectors extends StatefulWidget {
   _TimeOccurrenceSelectorsState createState() => _TimeOccurrenceSelectorsState();
 }
 
+@deprecated
 class _TimeOccurrenceSelectorsState extends State<TimeOccurrenceSelectors> {
 
-  List<TimeOfDay> currentTimeList;
+  late List<TimeOfDay> currentTimeList;
 
   @override
   void initState() {
     super.initState();
-    currentTimeList = widget.prevTimeList == null ? [] : List.of(widget.prevTimeList);
+    currentTimeList = widget.prevTimeList == null ? [] : List.of(widget.prevTimeList!);
   }
 
   @override
@@ -49,6 +51,9 @@ class _TimeOccurrenceSelectorsState extends State<TimeOccurrenceSelectors> {
     );
 
     if (currentTimeList != null) {
+      if (widget.maxOccurrences == 1)
+        currentTimeList = List.of([TimeOfDay(hour: 0, minute: 0)]);
+
       return Column(
         children: [
           Wrap(
@@ -71,32 +76,36 @@ class _TimeOccurrenceSelectorsState extends State<TimeOccurrenceSelectors> {
                     ),
                   ),
                   Spacer(),
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: DecoratedBox(
-                      child: IconButton(
-                        icon: Icon(Icons.delete_outline),
-                        onPressed: () {
-                          setState(() {
-                            currentTimeList.removeAt(index);
-                          });
-                        },
-                        iconSize: 20,
-                      ),
-                      decoration: ShapeDecoration(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(width: 1, style: BorderStyle.solid),
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                  () {
+                    if (widget.maxOccurrences == 1)
+                      return Container(height: 0);
+                    return SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: DecoratedBox(
+                        child: IconButton(
+                          icon: Icon(Icons.delete_outline),
+                          onPressed: () {
+                            setState(() {
+                              currentTimeList.removeAt(index);
+                            });
+                          },
+                          iconSize: 20,
+                        ),
+                        decoration: ShapeDecoration(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(width: 1, style: BorderStyle.solid),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                          ),
                         ),
                       ),
-                    ),
-                  )
+                    );
+                  } ()
                 ],
               );
             }),
           ),
-          addButton
+          widget.maxOccurrences > 1 ? addButton : Container(height: 0,)
         ],
       );
     }

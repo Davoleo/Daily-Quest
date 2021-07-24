@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 class AddEditTaskScreen extends StatefulWidget {
 
   final bool edit;
-  final Task previousTask;
+  final Task? previousTask;
 
   final List<DropdownMenuItem<TaskFrequency>> _categories = [];
 
@@ -24,8 +24,8 @@ class AddEditTaskScreen extends StatefulWidget {
     }
   }
 
-  Future<Icon> _showIconPicker(context) async {
-    Icon choice = await showDialog<Icon>(context: context, builder: (BuildContext context) {
+  Future<Icon?> _showIconPicker(context) async {
+    Icon? choice = await showDialog<Icon>(context: context, builder: (BuildContext context) {
       return IconPicker(
         title: const Text("Select an Icon", style: TextStyle(fontSize: 24),),
         icons: Constants.supportedTaskIcons,
@@ -46,29 +46,35 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
   String notes = "";
   Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
   TaskFrequency category = TaskFrequency.Daily;
-  int maxOccurrences;
+  late int maxOccurrences;
+  bool advanced = false;
 
   List<bool> weekChoices = new List.filled(7, false);
 
+  String advancedCheckboxLabel = "";
   @override
   Widget build(BuildContext context) {
     switch(category) {
       case TaskFrequency.Daily:
         maxOccurrences = 12;
+        advancedCheckboxLabel = "Allow multiple occurrences per day";
         break;
       case TaskFrequency.Weekly:
         maxOccurrences = 7;
+        advancedCheckboxLabel = "Allow multiple occurrences per week";
         break;
       case TaskFrequency.Monthly:
         maxOccurrences = 1;
+        advancedCheckboxLabel = "Anticipate occurrence on shorter months";
         break;
       case TaskFrequency.Yearly:
         maxOccurrences = 10;
+        advancedCheckboxLabel = "Multiple Months per year";
         break;
     }
 
-    List<TimeOfDay> _occList = widget.previousTask == null ? null : widget.previousTask.occurrences.map(UtilFunctions.timeOfDate);
-    TimeOccurrenceSelectors timeOccButtons = new TimeOccurrenceSelectors(maxOccurrences, _occList);
+    List<TimeOfDay>? _occList = widget.previousTask == null ? null : widget.previousTask!.occurrences.map(UtilFunctions.timeOfDate).toList();
+    TimeOccurrenceSelectors timeOccButtons = new TimeOccurrenceSelectors(advanced ? maxOccurrences : 1, _occList);
 
     final List<SCheckbox> weekCheckboxes = List.generate(
         7, (index) =>
@@ -78,7 +84,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
           padding: const EdgeInsets.symmetric(horizontal: 8),
           onChanged: (value) {
             setState(() {
-              weekChoices[index] = value;
+              if (value != null)
+                weekChoices[index] = value;
             });
           },
         )
@@ -149,7 +156,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
                 children: [
                   Text("Icon: ", style: TextStyle(fontSize: 18),),
                   IconButton(icon: currentIcon, onPressed: () async {
-                    Icon choice = await widget._showIconPicker(context);
+                    Icon? choice = await widget._showIconPicker(context);
                     setState(() {
                       if (choice != null)
                         currentIcon = choice;
@@ -175,11 +182,17 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
                     setState(() {
                       //Clear focus from the text field so that it doesn't go back to it
                       FocusScope.of(context).requestFocus(FocusNode());
-                      category = value;
+                      if (value != null)
+                        category = value;
                     });
                   },
                 ),
               ),
+              SCheckbox(label: advancedCheckboxLabel, value: advanced, onChanged: (value) {
+                setState(() {
+                  advanced = !advanced;
+                });
+              })
             ],
           ),
           AnimatedSize(
