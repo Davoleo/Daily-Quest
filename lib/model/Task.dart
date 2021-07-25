@@ -82,7 +82,8 @@ class Task {
   Task.yearly(
       this.title,
       TimeOfDay timeOccurrence,
-      DateTime date,
+      Month month,
+      int day,
       [
         this.notes = "",
         this.icon = Icons.title,
@@ -90,11 +91,11 @@ class Task {
   ) {
     taskType = TaskFrequency.Yearly;
     DateTime current = DateTime.now();
-    DateTime dateTime = DateTime(current.year, date.month, date.day, timeOccurrence.hour, timeOccurrence.minute);
+    DateTime dateTime = DateTime(current.year, month.ordinal, day, timeOccurrence.hour, timeOccurrence.minute);
     if (current.isAfter(dateTime))
-      dateTime = DateTime(current.year + 1, date.month, date.day, timeOccurrence.hour, timeOccurrence.minute);
+      dateTime = DateTime(current.year + 1, month.ordinal, day, timeOccurrence.hour, timeOccurrence.minute);
     else
-      dateTime = DateTime(current.year, date.month, date.day, timeOccurrence.hour, timeOccurrence.minute);
+      dateTime = DateTime(current.year, month.ordinal, day, timeOccurrence.hour, timeOccurrence.minute);
     occurrence = dateTime;
   }
 

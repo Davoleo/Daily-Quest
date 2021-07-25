@@ -26,7 +26,14 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  removeTask(String title) {
+  void addTask(Task task) {
+    setState(() {
+      taskList.add(task);
+      appendData(task.toJson());
+    });
+  }
+
+  void removeTask(String title) {
     setState(() {
       taskList.removeWhere((task) => task.title == title);
       var jsonList = taskList.map((task) => task.toJson()).toList();
@@ -82,8 +89,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditTaskScreen(false)));
+        onPressed: () async {
+          Task? task = await Navigator.push<Task>(context, MaterialPageRoute(builder: (context) => AddEditTaskScreen(false)));
+          if (task != null) {
+            addTask(task);
+          }
         },
         tooltip: 'Add Task',
         child: Icon(Icons.add),

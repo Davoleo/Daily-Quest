@@ -52,15 +52,18 @@ class AddEditTaskScreen extends StatefulWidget {
 
 class _AddEditTaskScreenState extends State<AddEditTaskScreen>
     with SingleTickerProviderStateMixin {
-  String title = "";
-  String notes = "";
-  Icon currentIcon = Icon(Icons.emoji_emotions_outlined);
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descController = TextEditingController();
+
+  Icon currentIcon = Icon(Icons.title);
   TaskFrequency category = TaskFrequency.Daily;
+
+  TimeOfDay occurrenceTime = TimeOfDay.now();
 
   //Weekly configuration
   List<bool> weekChoices = new List.filled(DateTime.daysPerWeek, false);
 
-  //Month Configuration
+  //Month Configuration (use dayOfMonth over the controller [already parsed and validated])
   int dayOfMonth = 1;
   TextEditingController dayController = TextEditingController(text: "1");
 
@@ -134,7 +137,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
             ),
             Container(
                 padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                child: TimeOccurrenceButton(prevTaskTime))
+                child: TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,))
           ],
         );
         break;
@@ -148,7 +151,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               style: widget._taskConfigurationTitleStyle,
             ),
             widget._separatorBox20,
-            TimeOccurrenceButton(prevTaskTime),
+            TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
             widget._separatorBox20,
             Wrap(
               direction: Axis.horizontal,
@@ -167,7 +170,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               style: widget._taskConfigurationTitleStyle,
             ),
             widget._separatorBox20,
-            TimeOccurrenceButton(prevTaskTime),
+            TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
             widget._separatorBox20,
             TextField(
               controller: dayController,
@@ -189,11 +192,19 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               style: widget._taskConfigurationTitleStyle,
             ),
             widget._separatorBox20,
-            TimeOccurrenceButton(prevTaskTime),
+            TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
             widget._separatorBox20,
             Wrap(
               direction: Axis.horizontal,
               children: monthCheckboxes,
+            ),
+            widget._separatorBox20,
+            TextField(
+              controller: dayController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly
+              ],
             )
           ],
         );
@@ -214,12 +225,14 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
             runSpacing: 20,
             children: [
               TextField(
+                controller: titleController,
                 decoration: InputDecoration(
                   border: Constants.fieldOutline,
                   labelText: "Title",
                 ),
               ),
               TextField(
+                controller: descController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 minLines: 3,
@@ -282,23 +295,42 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
                   borderRadius: BorderRadius.circular(8)),
               child: frequencyConfig,
             ),
-          )
+          ),
         ],
       ),
     );
-
-    if (!widget.edit) {}
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.edit ? "Edit Task" : "New Task"),
         actions: [
           IconButton(
-              icon: Icon(Icons.done),
-              onPressed: () {
-                //TODO Build new task
-                Task newTask;
-              }),
+            icon: Icon(Icons.done),
+            onPressed: () {
+              Task newTask;
+              switch(category) {
+                case TaskFrequency.Daily:
+                  newTask = Task.daily(titleController.text, occurrenceTime,
+                      descController.text, currentIcon.icon!);
+                  break;
+                case TaskFrequency.Weekly:
+                  newTask = Task.weekly(titleController.text, occurrenceTime,
+                      Constants.weekDays[weekChoices.indexOf(true)], descController.text, currentIcon.icon!);
+                  break;
+                case TaskFrequency.Monthly:
+                  newTask = Task.monthly(titleController.text, occurrenceTime,
+                      dayOfMonth, descController.text, currentIcon.icon!);
+                  break;
+                case TaskFrequency.Yearly:
+                  newTask = Task.yearly(titleController.text, occurrenceTime,
+                      Constants.months[monthChoices.indexOf(true)], dayOfMonth,
+                      descController.text, currentIcon.icon!);
+                  break;
+              }
+
+              Navigator.pop(context, newTask);
+            },
+          ),
         ],
       ),
       body: content,

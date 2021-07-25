@@ -11,6 +11,11 @@ late Directory dataDir;
 late File jsonFile;
 bool isReady = false;
 
+//TODO rework DATA I/O to be more reliable
+//Corrupt Json file example:
+//   []{"title":"test","notes":"first task","complete":false,"icon":57648,"frequency":"TaskFrequency.Weekly","occurrence":1627485901558}
+
+
 void initFileConnection(Function callback) {
   getApplicationDocumentsDirectory().then((Directory directory) {
     dataDir = directory;

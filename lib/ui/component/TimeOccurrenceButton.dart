@@ -16,8 +16,9 @@ class TimeOccurrenceButton extends StatefulWidget {
   );
 
   final TimeOfDay? prevTaskTime;
+  final ValueChanged<TimeOfDay>? onTimeChanged;
 
-  TimeOccurrenceButton([this.prevTaskTime]);
+  TimeOccurrenceButton({this.onTimeChanged, this.prevTaskTime});
 
   @override
   _TimeOccurrenceButtonState createState() => _TimeOccurrenceButtonState();
@@ -42,6 +43,8 @@ class _TimeOccurrenceButtonState extends State<TimeOccurrenceButton> {
             print("Value is: " + value.toString());
             currentTime = value;
           });
+
+          widget.onTimeChanged?.call(value);
         }
       }),
       style: widget._flatButtonStyle,
