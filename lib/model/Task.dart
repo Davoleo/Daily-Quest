@@ -169,14 +169,20 @@ class Task {
   }
 
   ///JSON Serialization
-  Map<String, dynamic> toJson() => {
-    'title': title,
-    'notes': notes,
-    'complete': complete,
-    'icon': icon.codePoint,
-    'frequency': taskType.toString(),
-    'occurrence': occurrence.millisecondsSinceEpoch
-  };
+  Map<String, dynamic> toJson() {
+    final jsonMap = {
+      'title': title,
+      'notes': notes,
+      'complete': complete,
+      'icon': icon.codePoint,
+      'frequency': taskType.toString(),
+      'occurrence': occurrence.millisecondsSinceEpoch,
+    };
+    if (this.taskType == TaskFrequency.Monthly)
+      jsonMap['monthly_anticipate'] = anticipateOccurrenceOnShorterMonths;
+
+    return jsonMap;
+  }
 
   @override
   int get hashCode {

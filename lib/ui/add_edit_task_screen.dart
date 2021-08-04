@@ -66,6 +66,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
   //Month Configuration (use dayOfMonth over the controller [already parsed and validated])
   int dayOfMonth = 1;
   TextEditingController dayController = TextEditingController(text: "1");
+  bool anticipateOnShorterMonths = false;
 
   //Yearly Configuration
   List<bool> monthChoices = new List.filled(DateTime.monthsPerYear, false);
@@ -163,7 +164,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
 
       case TaskFrequency.Monthly:
         frequencyConfig = Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               "Monthly Task Configuration",
@@ -172,12 +173,39 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
             widget._separatorBox20,
             TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
             widget._separatorBox20,
-            TextField(
-              controller: dayController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Day of Month: "),
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        border: OutlineInputBorder()
+                    ),
+                    controller: dayController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  ),
+                )
               ],
+            ),
+            widget._separatorBox20,
+            SCheckbox(
+              label: "Anticipate occurrence on shorter months",
+              value: anticipateOnShorterMonths,
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    anticipateOnShorterMonths = value;
+                  });
+                }
+              }
             )
           ],
         );
@@ -319,7 +347,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
                   break;
                 case TaskFrequency.Monthly:
                   newTask = Task.monthly(titleController.text, occurrenceTime,
-                      dayOfMonth, descController.text, currentIcon.icon!);
+                      dayOfMonth, descController.text, currentIcon.icon!, anticipateOnShorterMonths);
                   break;
                 case TaskFrequency.Yearly:
                   newTask = Task.yearly(titleController.text, occurrenceTime,
