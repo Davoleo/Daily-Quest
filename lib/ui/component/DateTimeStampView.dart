@@ -21,6 +21,7 @@ class DateTimeStampView extends StatelessWidget {
       child: Text(
         dateTimeString,
         style: TextStyle(
+          fontSize: 13,
           fontFamily: "JetbrainsMono",
           color: Colors.black54
         ),

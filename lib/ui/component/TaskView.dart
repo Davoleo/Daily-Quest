@@ -53,7 +53,7 @@ class _TaskViewState extends State<TaskView> {
                       maxLines: 3,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.normal,
                         color: widget.task.complete ? Colors.black54 : Colors.black,
                         decoration: widget.task.complete ? TextDecoration.lineThrough : TextDecoration.none
@@ -73,7 +73,7 @@ class _TaskViewState extends State<TaskView> {
                     });
                   },
                   activeColor: darkPrimary,
-                  checkColor: Theme.of(context).primaryColorLight,
+                  checkColor: Colors.grey[300],
                 ),
               ),
             ],
