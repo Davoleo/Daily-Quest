@@ -26,7 +26,7 @@ class _TaskViewState extends State<TaskView> {
         },
         direction: DismissDirection.endToStart,
         background: DecoratedBox(
-          decoration: BoxDecoration(color: Colors.red),
+          decoration: BoxDecoration(color: Colors.grey[700]),
           child: Align(
             alignment: AlignmentDirectional(0.8, 0),
             child: Icon(Icons.delete, color: Colors.white),
