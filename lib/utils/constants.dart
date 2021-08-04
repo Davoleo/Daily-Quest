@@ -23,7 +23,7 @@ class Constants {
     Icon(Icons.title),
     Icon(Icons.alarm),
     Icon(Icons.ac_unit),
-    Icon(Icons.accessibility),
+    Icon(Icons.fitness_center),
     Icon(Icons.accessible),
     Icon(Icons.account_balance),
     Icon(Icons.camera_alt),
@@ -74,6 +74,19 @@ class Constants {
     DayOfWeek("Saturday", DateTime.saturday),
     DayOfWeek("Sunday", DateTime.sunday),
   ];
+
+  static final MaterialColor accentSwatch = new MaterialColor(0xff4C6D42, {
+    50: Color(0xff9daf97),
+    100: Color(0xff94a78e),
+    200: Color(0xff82997b),
+    300: Color(0xff708a68),
+    400: Color(0xff5e7c55),
+    500: Color(0xff4c6d42),
+    600: Color(0xff44623b),
+    700: Color(0xff3d5735),
+    800: Color(0xff354c2e),
+    900: Color(0xff2e4128),
+  });
 
   static init(BuildContext context) {
     primaryLight30 = Theme.of(context).primaryColorLight.withAlpha(76);

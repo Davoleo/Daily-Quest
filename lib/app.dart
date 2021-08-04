@@ -1,4 +1,5 @@
 import 'package:daily_quest/ui/home_screen.dart';
+import 'package:daily_quest/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 void main() => runApp(MyApp());
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         primaryColorLight: Color(0xFF9c786c),
         accentColor: Color(0xff4C6D42),
         brightness: Brightness.light,
-        primarySwatch: Colors.green,
+        primarySwatch: Constants.accentSwatch,
 
         dialogBackgroundColor: Color(0xffe5ccc5),
         appBarTheme: AppBarTheme(brightness: Brightness.dark),
