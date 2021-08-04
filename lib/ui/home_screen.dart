@@ -14,11 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Task> taskList = [];
+  late final IOManager dataManager;
 
   @override
   void initState() {
     super.initState();
-    initFileConnection(() {
+    dataManager = new IOManager(() {
       // taskList.add(Task(title: "Set the right temperature settings for the season", icon: Icons.ac_unit, taskType: TaskFrequency.annual, delay: Duration(days: 365)));
       // taskList.add(Task(title: "Wake up after resting in the afternoon", icon: Icons.access_alarm, taskType: TaskFrequency.daily, delay: Duration(days: 1)));
       // taskList.add(Task(title: "Take my grandma to the weekly doctor visit", icon: Icons.accessible, taskType: TaskFrequency.weekly, delay: Duration(days: 7)));
@@ -29,15 +30,19 @@ class _HomePageState extends State<HomePage> {
   void addTask(Task task) {
     setState(() {
       taskList.add(task);
-      appendData(task.toJson());
+      dataManager.appendTask(task);
     });
   }
 
   void removeTask(String title) {
     setState(() {
-      taskList.removeWhere((task) => task.title == title);
-      var jsonList = taskList.map((task) => task.toJson()).toList();
-      saveOverwriteData(jsonList);
+      taskList.removeWhere((task) {
+        if (task.title == title) {
+          dataManager.removeTask(task);
+          return true;
+        }
+        return false;
+      });
       print("Length: ${taskList.length}");
     });
   }
@@ -58,7 +63,7 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         color: Constants.primaryLight30,
         child: FutureBuilder(
-          future: loadData(),
+          future: dataManager.loadData(),
           builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
             if (snapshot.hasError)
               return Center(child: Text("An error occurred while loading data\nError: " + snapshot.error.toString()));

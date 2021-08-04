@@ -21,7 +21,6 @@ class Task {
 
   //Type of task
   late TaskFrequency taskType;
-  bool advanced = false;
 
   //Extra
   bool anticipateOccurrenceOnShorterMonths = false;
@@ -178,4 +177,17 @@ class Task {
     'frequency': taskType.toString(),
     'occurrence': occurrence.millisecondsSinceEpoch
   };
+
+  @override
+  int get hashCode {
+    return hashValues(title, icon);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Task) {
+      return this.title == other.title && this.icon == other.icon;
+    }
+    return false;
+  }
 }
