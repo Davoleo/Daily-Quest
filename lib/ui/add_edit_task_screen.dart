@@ -3,6 +3,7 @@ import 'package:daily_quest/ui/component/IconPicker.dart';
 import 'package:daily_quest/ui/component/SmartCheckbox.dart';
 import 'package:daily_quest/ui/component/TimeOccurrenceButton.dart';
 import 'package:daily_quest/utils/constants.dart';
+import 'package:daily_quest/utils/dropdown_size_hack.dart';
 import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,8 +76,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
   void initState() {
     super.initState();
     dayController.addListener(() {
-      if (dayController.text.isEmpty)
-        return;
+      if (dayController.text.isEmpty) return;
       int parsed = int.parse(dayController.text);
       if (parsed > 0 && parsed <= 31)
         dayOfMonth = parsed;
@@ -138,7 +138,10 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
             ),
             Container(
                 padding: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                child: TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,))
+                child: TimeOccurrenceButton(
+                  prevTaskTime: prevTaskTime,
+                  onTimeChanged: (val) => occurrenceTime = val,
+                ))
           ],
         );
         break;
@@ -152,7 +155,10 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               style: widget._taskConfigurationTitleStyle,
             ),
             widget._separatorBox20,
-            TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
+            TimeOccurrenceButton(
+              prevTaskTime: prevTaskTime,
+              onTimeChanged: (val) => occurrenceTime = val,
+            ),
             widget._separatorBox20,
             Wrap(
               direction: Axis.horizontal,
@@ -171,7 +177,10 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               style: widget._taskConfigurationTitleStyle,
             ),
             widget._separatorBox20,
-            TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
+            TimeOccurrenceButton(
+              prevTaskTime: prevTaskTime,
+              onTimeChanged: (val) => occurrenceTime = val,
+            ),
             widget._separatorBox20,
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -184,29 +193,25 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                        border: OutlineInputBorder()
-                    ),
+                        border: OutlineInputBorder()),
                     controller: dayController,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                 )
               ],
             ),
             widget._separatorBox20,
             SCheckbox(
-              label: "Anticipate occurrence on shorter months",
-              value: anticipateOnShorterMonths,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    anticipateOnShorterMonths = value;
-                  });
-                }
-              }
-            )
+                label: "Anticipate occurrence on shorter months",
+                value: anticipateOnShorterMonths,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      anticipateOnShorterMonths = value;
+                    });
+                  }
+                })
           ],
         );
         break;
@@ -220,7 +225,10 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               style: widget._taskConfigurationTitleStyle,
             ),
             widget._separatorBox20,
-            TimeOccurrenceButton(prevTaskTime: prevTaskTime, onTimeChanged: (val) => occurrenceTime = val,),
+            TimeOccurrenceButton(
+              prevTaskTime: prevTaskTime,
+              onTimeChanged: (val) => occurrenceTime = val,
+            ),
             widget._separatorBox20,
             Wrap(
               direction: Axis.horizontal,
@@ -230,9 +238,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
             TextField(
               controller: dayController,
               keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly
-              ],
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             )
           ],
         );
@@ -293,22 +299,26 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 150),
                 //padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                child: DropdownButtonFormField<TaskFrequency>(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 1, style: BorderStyle.solid)),
-                      labelText: "Task Type"),
-                  value: category,
-                  items: widget._categories,
-                  onChanged: (value) {
-                    setState(() {
-                      //Clear focus from the text field so that it doesn't go back to it
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      if (value != null) category = value;
-                    });
-                  },
-                ),
+                child: GestureDetector(
+                  key: dropDownHackKey,
+                  onTap: openDropDownInternalHack,
+                  child: DropdownButtonFormField<TaskFrequency>(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderSide:
+                            BorderSide(width: 1, style: BorderStyle.solid)),
+                        labelText: "Task Type"),
+                    value: category,
+                    items: widget._categories,
+                    onChanged: (value) {
+                      setState(() {
+                        //Clear focus from the text field so that it doesn't go back to it
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        if (value != null) category = value;
+                      });
+                    },
+                  ),
+                )
               ),
             ],
           ),
@@ -336,23 +346,36 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
             icon: Icon(Icons.done),
             onPressed: () {
               Task newTask;
-              switch(category) {
+              switch (category) {
                 case TaskFrequency.Daily:
                   newTask = Task.daily(titleController.text, occurrenceTime,
                       descController.text, currentIcon.icon!);
                   break;
                 case TaskFrequency.Weekly:
-                  newTask = Task.weekly(titleController.text, occurrenceTime,
-                      Constants.weekDays[weekChoices.indexOf(true)], descController.text, currentIcon.icon!);
+                  newTask = Task.weekly(
+                      titleController.text,
+                      occurrenceTime,
+                      Constants.weekDays[weekChoices.indexOf(true)],
+                      descController.text,
+                      currentIcon.icon!);
                   break;
                 case TaskFrequency.Monthly:
-                  newTask = Task.monthly(titleController.text, occurrenceTime,
-                      dayOfMonth, descController.text, currentIcon.icon!, anticipateOnShorterMonths);
+                  newTask = Task.monthly(
+                      titleController.text,
+                      occurrenceTime,
+                      dayOfMonth,
+                      descController.text,
+                      currentIcon.icon!,
+                      anticipateOnShorterMonths);
                   break;
                 case TaskFrequency.Yearly:
-                  newTask = Task.yearly(titleController.text, occurrenceTime,
-                      Constants.months[monthChoices.indexOf(true)], dayOfMonth,
-                      descController.text, currentIcon.icon!);
+                  newTask = Task.yearly(
+                      titleController.text,
+                      occurrenceTime,
+                      Constants.months[monthChoices.indexOf(true)],
+                      dayOfMonth,
+                      descController.text,
+                      currentIcon.icon!);
                   break;
               }
 
