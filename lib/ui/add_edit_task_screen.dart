@@ -4,7 +4,6 @@ import 'package:daily_quest/ui/component/SmartCheckbox.dart';
 import 'package:daily_quest/ui/component/TimeOccurrenceButton.dart';
 import 'package:daily_quest/utils/constants.dart';
 import 'package:daily_quest/utils/dropdown_size_hack.dart';
-import 'package:daily_quest/utils/functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -124,7 +123,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen>
 
     Widget frequencyConfig;
     TimeOfDay? prevTaskTime = widget.previousTask != null
-        ? UtilFunctions.timeOfDate(widget.previousTask!.occurrence)
+        ? TimeOfDay.fromDateTime(widget.previousTask!.occurrence)
         : null;
 
     switch (category) {
